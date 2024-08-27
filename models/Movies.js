@@ -5,7 +5,7 @@ const movieSchema = new mongoose.Schema({
   layout: String,
   freeVideos: { type: Number, required: true },
   visible: { type: Boolean, required: true },
-  thumbnail: String,
+  fileLocation: String,
 });
 const Movies = mongoose.model("Movies", movieSchema);
 module.exports = Movies;
