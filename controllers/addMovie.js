@@ -3,38 +3,83 @@ const Shorts = require("../models/Shorts");
 const fs = require("fs");
 const path = require("path");
 const { time } = require("console");
+const Movies = require("../models/Movies");
 exports.addMovie = async (req, res) => {
   // console.log("req is coming",  req.body);
-  const { title, layouts, freeVideos, visible } = req.body;
+  if (!req.files.thumbnail) {
+    return res.status(400).json({ msg: "please upload thumbnail" });
+  }
+  const { title, layouts, freeVideos, visible, genre } = req.body;
 
+  // return;
+  if (!title) {
+    return res.status(400).json({ msg: "please provide title" });
+  }
   const thumbnailPath = path.join(__dirname, "..", "uploads", "thumbnail");
 
   const pathExists = fs.existsSync(thumbnailPath);
- 
+
   if (!pathExists) {
     fs.mkdirSync(thumbnailPath, { recursive: true });
   }
-  const fileName = `${title}-thumbnail_${Date.now()}`;
-  
-  const mimeType = req.files.thumbnail[0].mimetype; // e.g., "image/png"
-  const fileExtension = mimeType.split("/")[1];
- 
-  const filePath = path.join(thumbnailPath, `${fileName}.${fileExtension}`);
+  try {
+    const fileName = `${title}-thumbnail_${Date.now()}`;
 
-  const uploadFile = fs.writeFileSync(filePath, req.files.thumbnail[0].buffer);
-  // console.log(req.files.shorts)
-  // console.log("object",req.files)
-  // return;
-  // try {
-  //   const result = await Shorts.create({
-  //
-  //     name: "hola",
-  //     genre: "pola",
-  //     fileLocation: "gola",
-  //     visible: true,
-  //   });
-  //   console.log(result);
-  // } catch (err) {
-  //   console.error("Error creating document:", err);
-  // }
+    const mimeType = req.files.thumbnail[0].mimetype; // e.g., "image/png"
+    const fileExtension = mimeType.split("/")[1];
+
+    const filePath = path.join(thumbnailPath, `${fileName}.${fileExtension}`);
+
+    const uploadFile = fs.writeFileSync(
+      filePath,
+      req.files.thumbnail[0].buffer
+    );
+
+    try {
+      const result = await Movies.create({
+        name: title,
+        fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
+        genre: genre,
+        visible: visible,
+        layout: layouts,
+        freeVideos: freeVideos,
+      });
+    } catch (err) {
+      console.error("Error creating document:", err);
+    }
+
+    const shortsFolderLocation = path.join(
+      __dirname,
+      "..",
+      "uploads",
+      "shorts"
+    );
+    const shortsFolderExists = fs.existsSync(shortsFolderLocation);
+    if (!shortsFolderExists) {
+      fs.mkdirSync(shortsFolderLocation);
+    }
+    if (req.files.shorts&&req.files.shorts.length > 0) {
+      req.files.shorts.forEach(async (current) => {
+        const shortsName = `${
+          current.originalname.split(".")[0]
+        }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+        const shortsPath = path.join(shortsFolderLocation, shortsName);
+        const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
+        try {
+          const result = await Shorts.create({
+            name: current.originalname,
+            fileLocation: `uploads/shorts/${shortsName}`,
+            genre: "action",
+            visible: true,
+          });
+        } catch (err) {
+          console.error("Error creating document:", err);
+        }
+      });
+    }
+    return res.status(200).json({ msg: "file saved successfully" });
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({ msg: "something went wrong", err: err });
+  }
 };
