@@ -14,7 +14,7 @@ routes.post(
   addMovie
 );
 routes.post("/addSlider", addSlider);
-routes.post("/addLayout",addLayout)
-routes.get("/allMovies",getAllMovies)
-routes.delete("/deleteMovie",deleteMovies)
+routes.post("/addLayout", addLayout);
+routes.get("/allMovies", getAllMovies);
+routes.delete("/deleteMovie/:id", deleteMovies);
 module.exports = routes;
