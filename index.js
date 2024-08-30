@@ -7,6 +7,7 @@ const app = express();connectDb();
 app.use(cors())
 app.use(express.json())
 app.use('/thumbnails', express.static(path.join(__dirname, 'uploads', 'thumbnail')));
+app.use('/video', express.static(path.join(__dirname, 'uploads', 'Shorts')))
 console.log(path.join(__dirname, 'uploads', 'thumbnail'))
 const adminRoutes = require("./routes/admin");
 

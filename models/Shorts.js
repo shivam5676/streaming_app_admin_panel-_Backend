@@ -4,6 +4,7 @@ const shortsSchema = new mongoose.Schema({
   fileLocation: String,
   genre: String,
   visible: { type: Boolean, required: true },
+  Movies: { type: mongoose.Schema.Types.ObjectId, ref: "Movies" },
 });
 const Shorts = mongoose.model("Shorts", shortsSchema);
 

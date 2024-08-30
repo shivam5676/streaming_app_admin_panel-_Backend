@@ -35,19 +35,14 @@ exports.addMovie = async (req, res) => {
       req.files.thumbnail[0].buffer
     );
 
-    try {
-      const result = await Movies.create({
-        name: title,
-        fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
-        genre: genre,
-        visible: visible,
-        layout: layouts,
-        freeVideos: freeVideos,
-      });
-    } catch (err) {
-      console.error("Error creating document:", err);
-    }
-
+    const movie = await Movies.create({
+      name: title,
+      fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
+      genre: genre,
+      visible: visible,
+      layout: layouts,
+      freeVideos: freeVideos,
+    });
     const shortsFolderLocation = path.join(
       __dirname,
       "..",
@@ -58,28 +53,28 @@ exports.addMovie = async (req, res) => {
     if (!shortsFolderExists) {
       fs.mkdirSync(shortsFolderLocation);
     }
-    if (req.files.shorts&&req.files.shorts.length > 0) {
-      req.files.shorts.forEach(async (current) => {
+    if (req.files.shorts && req.files.shorts.length > 0) {
+      const shortsPromises = req.files.shorts.map(async (current) => {
         const shortsName = `${
           current.originalname.split(".")[0]
         }_${Date.now()}.${current.mimetype.split("/")[1]}`;
         const shortsPath = path.join(shortsFolderLocation, shortsName);
         const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-        try {
-          const result = await Shorts.create({
-            name: current.originalname,
-            fileLocation: `uploads/shorts/${shortsName}`,
-            genre: "action",
-            visible: true,
-          });
-        } catch (err) {
-          console.error("Error creating document:", err);
-        }
+        const short = await Shorts.create({
+          name: current.originalname,
+          fileLocation: `uploads/shorts/${shortsName}`,
+          genre: "action",
+          visible: true,
+        });
+        return short._id
       });
+      const shortsIds = await Promise.all(shortsPromises);
+      movie.shorts.push(...shortsIds);
+      await movie.save();
     }
     return res.status(200).json({ msg: "file saved successfully" });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return res.status(400).json({ msg: "something went wrong", err: err });
   }
 };
