@@ -10,7 +10,12 @@ exports.addMovie = async (req, res) => {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
   const { title, layouts, freeVideos, visible, genre } = req.body;
-
+  console.log(layouts);
+  // return;
+  const parsedLayout = JSON.parse(layouts) .map((current) => {
+    return current._id;
+  });
+  console.log(parsedLayout);
   // return;
   if (!title) {
     return res.status(400).json({ msg: "please provide title" });
@@ -40,7 +45,7 @@ exports.addMovie = async (req, res) => {
       fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
       genre: genre,
       visible: visible,
-      layout: layouts,
+      layouts: parsedLayout,
       freeVideos: freeVideos,
     });
     const shortsFolderLocation = path.join(
@@ -66,7 +71,7 @@ exports.addMovie = async (req, res) => {
           genre: "action",
           visible: true,
         });
-        return short._id
+        return short._id;
       });
       const shortsIds = await Promise.all(shortsPromises);
       movie.shorts.push(...shortsIds);
