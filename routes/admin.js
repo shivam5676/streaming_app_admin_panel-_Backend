@@ -9,9 +9,12 @@ const { deleteMovies } = require("../controllers/deleteMovies");
 const { getmovie } = require("../controllers/getmovie");
 const { editMovie } = require("../controllers/editMovie");
 const { deleteShort } = require("../controllers/deleteShort");
-const {  getAllLayout } = require("../controllers/getAllLayout");
+const { getAllLayout } = require("../controllers/getAllLayout");
 const { getLayout } = require("../controllers/getLayout");
 const { editLayout } = require("../controllers/editLayout");
+const {
+  deleteLayoutLinkedMovies,
+} = require("../controllers/deleteLayoutLinkedMovies");
 
 const upload = multer();
 const routes = express.Router();
@@ -33,7 +36,8 @@ routes.post(
 );
 routes.get("/allLayouts", getAllLayout);
 routes.get("/getLayout/:id", getLayout);
-routes.post("/editLayout",editLayout);
+routes.post("/editLayout", editLayout);
 routes.delete("/deleteShort/:id", deleteShort);
-
+// deleteLinkedMovie
+routes.post("/deleteLinkedMovie", deleteLayoutLinkedMovies);
 module.exports = routes;
