@@ -2,9 +2,25 @@ const Movies = require("../models/Movies");
 const path = require("path");
 const fs = require("fs");
 const Shorts = require("../models/Shorts");
+const Layout = require("../models/Layout");
 exports.editMovie = async (req, res, next) => {
   const { id, title, layouts, freeVideos, visible, genre } = req.body;
   console.log(req.files.shorts);
+  const allLayouts = await Movies.findById(id).select("_id");
+  console.log(allLayouts);
+  // i have to analyze differentiate all layouts and current accepted layouts and after that i have to remove movies id from all those remaining layout which is not matched yet
+  return;
+  // if (parsedLayout.length > 0) {
+  //   const pendingPromises = parsedLayout.map(async (current) => {
+  //     const layoutResponse = await Layout.findById(current);
+  //     if (layoutResponse) {
+  //       layoutResponse.linkedMovies.push(id);
+  //       await layoutResponse.save();
+  //     }
+  //   });
+  //   await Promise.all(pendingPromises);
+  // }
+  // return;
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
@@ -24,7 +40,7 @@ exports.editMovie = async (req, res, next) => {
       if (!getMovies) {
         return res.status(400).json({ msg: "no data found" });
       }
-      
+
       console.log(getMovies);
       const thumbnailPath = path.join(__dirname, "..", getMovies.fileLocation);
       console.log(thumbnailPath, "...");
@@ -67,6 +83,18 @@ exports.editMovie = async (req, res, next) => {
           layouts: parsedLayout,
           freeVideos: freeVideos,
         });
+        if (parsedLayout.length > 0) {
+          const pendingPromises = parsedLayout.map(async (current) => {
+            const layoutResponse = await Layout.findById(current);
+            if (layoutResponse) {
+              layoutResponse.linkedMovies.push(id);
+              await layoutResponse.save();
+            }
+          });
+          await Promise.all(pendingPromises);
+        }
+        // const response = await Layout.find().select("_id");
+        // console.log(response)
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
             const shortsName = `${
@@ -107,6 +135,16 @@ exports.editMovie = async (req, res, next) => {
           layouts: parsedLayout,
           freeVideos: freeVideos,
         });
+        if (parsedLayout.length > 0) {
+          const pendingPromises = parsedLayout.map(async (current) => {
+            const layoutResponse = await Layout.findById(current);
+            if (layoutResponse) {
+              layoutResponse.linkedMovies.push(id);
+              await layoutResponse.save();
+            }
+          });
+          await Promise.all(pendingPromises);
+        }
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
             const shortsName = `${

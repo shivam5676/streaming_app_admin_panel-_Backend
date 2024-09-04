@@ -9,19 +9,24 @@ exports.editLayout = async (req, res, next) => {
 
   //   console.log(movies);
   try {
-    // const layoutResponse = await Layout.findById(id);
+    const layoutResponse = await Layout.findById(id);
     // const layoutResponse = await Layout.create({
     //   name: name,
     //   Description: Description,
     //   // linkedMovies: linkedMovies,
     // });
-    console.log(layoutResponse);
-    return
+    // console.log(layoutResponse);
+    // return
     if (linkedMovies.length > 0) {
       const moviesResponses = linkedMovies.map(async (currentMovie) => {
         const getMovie = await Movies.findById(currentMovie._id);
         if (getMovie) {
+          console.log(getMovie, "....>", id);
 
+          await getMovie.layouts.push(id);
+          await layoutResponse.linkedMovies.push(currentMovie._id);
+          await getMovie.save();
+          await layoutResponse.save();
         }
       });
       await Promise.all(moviesResponses);

@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const { time } = require("console");
 const Movies = require("../models/Movies");
+const Layout = require("../models/Layout");
 exports.addMovie = async (req, res) => {
   // console.log("req is coming",  req.body);
   if (!req.files.thumbnail) {
@@ -12,10 +13,10 @@ exports.addMovie = async (req, res) => {
   const { title, layouts, freeVideos, visible, genre } = req.body;
   console.log(layouts);
   // return;
-  const parsedLayout = JSON.parse(layouts) .map((current) => {
+  const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
-  console.log(parsedLayout);
+  console.log(parsedLayout, "layoutttttttttttt");
   // return;
   if (!title) {
     return res.status(400).json({ msg: "please provide title" });
@@ -48,6 +49,17 @@ exports.addMovie = async (req, res) => {
       layouts: parsedLayout,
       freeVideos: freeVideos,
     });
+    if (movie) {
+      const pendingPromises = parsedLayout.map(async (current) => {
+        const layoutResponse = await Layout.findById(current);
+        if (layoutResponse) {
+          layoutResponse.linkedMovies.push(movie._id);
+          await layoutResponse.save();
+        }
+      });
+      await Promise.all(pendingPromises);
+    }
+    console.log(movie);
     const shortsFolderLocation = path.join(
       __dirname,
       "..",
