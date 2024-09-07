@@ -5,24 +5,31 @@ const Shorts = require("../models/Shorts");
 const Layout = require("../models/Layout");
 exports.editMovie = async (req, res, next) => {
   const { id, title, layouts, freeVideos, visible, genre } = req.body;
-  console.log(req.files.shorts);
-  const allLayouts = await Movies.findById(id).select("_id");
-  console.log(allLayouts);
-  // i have to analyze differentiate all layouts and current accepted layouts and after that i have to remove movies id from all those remaining layout which is not matched yet
-  return;
-  // if (parsedLayout.length > 0) {
-  //   const pendingPromises = parsedLayout.map(async (current) => {
-  //     const layoutResponse = await Layout.findById(current);
-  //     if (layoutResponse) {
-  //       layoutResponse.linkedMovies.push(id);
-  //       await layoutResponse.save();
-  //     }
-  //   });
-  //   await Promise.all(pendingPromises);
-  // }
-  // return;
+  // console.log(id);
+  async function unlinkMovieHandler() {
+    const allLayouts = await Movies.findById(id).select(
+      "layouts -_id"
+    );
+
+    const pendingPromises = allLayouts.layouts.map(async (current) => {
+      const matched = JSON.parse(layouts).find((element) => {
+        return element._id == current.toString();
+      });
+
+      if (!matched) {
+        console.log(current, "...>");
+        const delinkMoviesFromLAyout = await Layout.findById(current);
+        await delinkMoviesFromLAyout.linkedMovies.pull(id);
+        await delinkMoviesFromLAyout.save();
+      }
+    });
+     await Promise.all(pendingPromises);
+  }
+
+ 
+
   const parsedLayout = JSON.parse(layouts).map((current) => {
-    return current._id;
+    return  current._id;
   });
   try {
     const shortsFolderLocation = path.join(
@@ -36,16 +43,15 @@ exports.editMovie = async (req, res, next) => {
       fs.mkdirSync(shortsFolderLocation);
     }
     if (req.files.thumbnail) {
-      const getMovies = await Movies.findById(id);
+      const getMovies = Movies.findById(id);
       if (!getMovies) {
         return res.status(400).json({ msg: "no data found" });
       }
 
-      console.log(getMovies);
       const thumbnailPath = path.join(__dirname, "..", getMovies.fileLocation);
-      console.log(thumbnailPath, "...");
+
       const deletedVideos = fs.unlinkSync(thumbnailPath);
-      console.log(deletedVideos);
+
       const thumbnailLocation = path.join(
         __dirname,
         "..",
@@ -75,6 +81,7 @@ exports.editMovie = async (req, res, next) => {
       );
 
       try {
+        unlinkMovieHandler();
         const result = await getMovies.updateOne({
           name: title,
           fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
@@ -126,6 +133,7 @@ exports.editMovie = async (req, res, next) => {
       if (!getMovies) {
         return res.status(400).json({ msg: "no data found" });
       }
+      unlinkMovieHandler();
       try {
         const result = await getMovies.updateOne({
           name: title,
