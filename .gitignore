@@ -1,4 +1,4 @@
-node_modules
+node_modules/
 .env
-shorts
-thumbnail
+uploads/shorts/
+uploads/thumbnail/
