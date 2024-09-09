@@ -15,6 +15,8 @@ const { editLayout } = require("../controllers/editLayout");
 const {
   deleteLayoutLinkedMovies,
 } = require("../controllers/deleteLayoutLinkedMovies");
+const { getAllSliders } = require("../controllers/getAllSliders");
+const { deleteSlider } = require("../controllers/deleteSlider");
 
 const upload = multer();
 const routes = express.Router();
@@ -40,4 +42,6 @@ routes.post("/editLayout", editLayout);
 routes.delete("/deleteShort/:id", deleteShort);
 // deleteLinkedMovie
 routes.post("/deleteLinkedMovie", deleteLayoutLinkedMovies);
+routes.get("/allSliders", getAllSliders);
+routes.delete("/deleteSlider/:id", deleteSlider);
 module.exports = routes;

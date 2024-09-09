@@ -7,12 +7,10 @@ exports.editMovie = async (req, res, next) => {
   const { id, title, layouts, freeVideos, visible, genre } = req.body;
   // console.log(id);
   async function unlinkMovieHandler() {
-    const allLayouts = await Movies.findById(id).select(
-      "layouts -_id"
-    );
+    const allLayouts = await Movies.findById(id).select("layouts -_id");
 
-    const pendingPromises = allLayouts.layouts.map(async (current) => {
-      const matched = JSON.parse(layouts).find((element) => {
+    const pendingPromises = allLayouts?.layouts.map(async (current) => {
+      const matched = JSON.parse(layouts)?.find((element) => {
         return element._id == current.toString();
       });
 
@@ -23,14 +21,12 @@ exports.editMovie = async (req, res, next) => {
         await delinkMoviesFromLAyout.save();
       }
     });
-     await Promise.all(pendingPromises);
+    await Promise.all(pendingPromises);
   }
 
- 
-
   const parsedLayout = JSON.parse(layouts).map((current) => {
-    return  current._id;
-  });
+    return current._id;
+  }); //i need to check if any id is already present then dont return it in parsed layout because it will come twice
   try {
     const shortsFolderLocation = path.join(
       __dirname,
@@ -92,7 +88,10 @@ exports.editMovie = async (req, res, next) => {
         });
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
-            const layoutResponse = await Layout.findById(current);
+            const layoutResponse = await Layout.findOne({
+              _id: current,
+              linkedMovies: { $ne: id },
+            });
             if (layoutResponse) {
               layoutResponse.linkedMovies.push(id);
               await layoutResponse.save();
@@ -145,7 +144,10 @@ exports.editMovie = async (req, res, next) => {
         });
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
-            const layoutResponse = await Layout.findById(current);
+            const layoutResponse = await Layout.findOne({
+              _id: current,
+              linkedMovies: { $ne: id },
+            });
             if (layoutResponse) {
               layoutResponse.linkedMovies.push(id);
               await layoutResponse.save();
