@@ -15,7 +15,7 @@ exports.addLayout = async (req, res, next) => {
       // linkedMovies: linkedMovies,
     });
     console.log(layoutResponse);
-    if (linkedMovies.length > 0) {
+    if (layoutResponse.length > 0) {
       const moviesResponses = linkedMovies.map(async (currentMovie) => {
         const getMovie = await Movies.findById(currentMovie._id);
         if (getMovie) {
@@ -28,6 +28,7 @@ exports.addLayout = async (req, res, next) => {
         }
       });
       await Promise.all(moviesResponses);
+      
     }
     return res.status(200).json({ layoutResponse });
   } catch (err) {
