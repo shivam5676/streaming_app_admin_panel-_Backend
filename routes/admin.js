@@ -17,6 +17,9 @@ const {
 } = require("../controllers/deleteLayoutLinkedMovies");
 const { getAllSliders } = require("../controllers/getAllSliders");
 const { deleteSlider } = require("../controllers/deleteSlider");
+const { addGenre } = require("../controllers/addGenre");
+const { getAllGenre } = require("../controllers/getAllGenre");
+const { deleteGenres } = require("../controllers/deleteGenre");
 
 const upload = multer();
 const routes = express.Router();
@@ -44,4 +47,7 @@ routes.delete("/deleteShort/:id", deleteShort);
 routes.post("/deleteLinkedMovie", deleteLayoutLinkedMovies);
 routes.get("/allSliders", getAllSliders);
 routes.delete("/deleteSlider/:id", deleteSlider);
+routes.post("/addGenre",upload.single("icon"),addGenre)
+routes.get("/allGenres",getAllGenre)
+routes.delete("/deleteGenre/:id", deleteGenres);
 module.exports = routes;
