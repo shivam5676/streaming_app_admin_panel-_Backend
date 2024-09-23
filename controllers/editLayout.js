@@ -5,18 +5,10 @@ const { get } = require("../routes/admin");
 exports.editLayout = async (req, res, next) => {
   const { name, Description, linkedMovies, id } = req.body;
   console.log(linkedMovies);
-  // return;
 
-  //   console.log(movies);
   try {
     const layoutResponse = await Layout.findById(id);
-    // const layoutResponse = await Layout.create({
-    //   name: name,
-    //   Description: Description,
-    //   // linkedMovies: linkedMovies,
-    // });
-    // console.log(layoutResponse);
-    // return
+
     if (linkedMovies.length > 0) {
       const moviesResponses = linkedMovies.map(async (currentMovie) => {
         const getMovie = await Movies.findById(currentMovie._id);
@@ -26,10 +18,11 @@ exports.editLayout = async (req, res, next) => {
           await getMovie.layouts.push(id);
           await layoutResponse.linkedMovies.push(currentMovie._id);
           await getMovie.save();
-          await layoutResponse.save();
         }
       });
+
       await Promise.all(moviesResponses);
+      await layoutResponse.save();
     }
     return res.status(200).json({ layoutResponse });
   } catch (err) {

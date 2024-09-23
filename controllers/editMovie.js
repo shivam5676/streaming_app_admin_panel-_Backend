@@ -39,13 +39,13 @@ exports.editMovie = async (req, res, next) => {
       fs.mkdirSync(shortsFolderLocation);
     }
     if (req.files.thumbnail) {
-      const getMovies = Movies.findById(id);
+      const getMovies = await Movies.findById(id);
       if (!getMovies) {
         return res.status(400).json({ msg: "no data found" });
       }
-
+      console.log(getMovies.fileLocation);
       const thumbnailPath = path.join(__dirname, "..", getMovies.fileLocation);
-
+      console.log(thumbnailPath);
       const deletedVideos = fs.unlinkSync(thumbnailPath);
 
       const thumbnailLocation = path.join(
@@ -76,6 +76,7 @@ exports.editMovie = async (req, res, next) => {
         req.files.thumbnail[0].buffer
       );
 
+      
       try {
         unlinkMovieHandler();
         const result = await getMovies.updateOne({
