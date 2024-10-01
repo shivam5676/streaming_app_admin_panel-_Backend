@@ -23,15 +23,20 @@ const { deleteGenres } = require("../controllers/deleteGenre");
 const { addLanguage } = require("../controllers/addLanguage");
 const { getAllLLanguages } = require("../controllers/getAllLAnguage");
 const { deleteLanguage } = require("../controllers/deleteLanguage");
+const { getAllUsers } = require("../controllers/getAllUSers");
 
 const upload = multer();
 const routes = express.Router();
 routes.post(
   "/addMovie",
-  upload.fields([{ name: "thumbnail" }, { name: "shorts" }]),
+  upload.fields([
+    { name: "thumbnail" },
+    { name: "shorts" },
+    { name: "trailerVideo" },
+  ]),
   addMovie
 );
-routes.post("/addSlider", addSlider);
+routes.post("/addSlider", upload.single("promotionalImage"), addSlider);
 routes.post("/addLayout", addLayout);
 routes.get("/allMovies", getAllMovies);
 routes.delete("/deleteMovie/:id", deleteMovies);
@@ -53,7 +58,8 @@ routes.delete("/deleteSlider/:id", deleteSlider);
 routes.post("/addGenre", upload.single("icon"), addGenre);
 routes.get("/allGenres", getAllGenre);
 routes.delete("/deleteGenre/:id", deleteGenres);
-routes.post("/addLanguage",  upload.single("icon"), addLanguage);
+routes.post("/addLanguage", upload.single("icon"), addLanguage);
 routes.get("/allLanguages", getAllLLanguages);
 routes.delete("/deleteLanguage/:id", deleteLanguage);
+routes.get("/allUsers", getAllUsers);
 module.exports = routes;

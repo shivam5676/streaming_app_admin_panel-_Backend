@@ -3,7 +3,7 @@ const Movies = require("../models/Movies");
 const mongoose = require("mongoose");
 const { get } = require("../routes/admin");
 exports.addLayout = async (req, res, next) => {
-  const { name, Description, linkedMovies } = req.body;
+  const { name, Description, linkedMovies ,visible} = req.body;
   console.log(linkedMovies);
   // return;
 
@@ -12,6 +12,7 @@ exports.addLayout = async (req, res, next) => {
     const layoutResponse = await Layout.create({
       name: name,
       Description: Description,
+      visible
       // linkedMovies: linkedMovies,
     });
     console.log(layoutResponse);

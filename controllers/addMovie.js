@@ -7,16 +7,22 @@ const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
 exports.addMovie = async (req, res) => {
   // console.log("req is coming",  req.body);
+
   if (!req.files.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
-  const { title, layouts, freeVideos, visible, genre } = req.body;
-  console.log(layouts);
+  const { title, layouts, freeVideos, visible, genre, trailerUrl,language } = req.body;
+  console.log(JSON.parse(language));
   // return;
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
-  console.log(parsedLayout, "layoutttttttttttt");
+  const parsedGenre = JSON.parse(genre).map((current) => {
+    return current._id;
+  });
+  const parsedLanguage = JSON.parse(language).map((current) => {
+    return current._id;
+  });
   // return;
   if (!title) {
     return res.status(400).json({ msg: "please provide title" });
@@ -44,10 +50,13 @@ exports.addMovie = async (req, res) => {
     const movie = await Movies.create({
       name: title,
       fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
-      genre: genre,
+      genre: parsedGenre,
+      language: parsedLanguage,
       visible: visible,
       layouts: parsedLayout,
       freeVideos: freeVideos,
+      trailerUrl,
+      parts: req.files.shorts.length || 0,
     });
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
@@ -82,6 +91,8 @@ exports.addMovie = async (req, res) => {
           fileLocation: `uploads/shorts/${shortsName}`,
           genre: "action",
           visible: true,
+          genre: parsedGenre,
+          language: parsedLanguage,
         });
         return short._id;
       });
