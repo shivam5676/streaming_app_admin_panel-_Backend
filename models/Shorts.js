@@ -5,6 +5,9 @@ const shortsSchema = new mongoose.Schema({
   genre: String,
   visible: { type: Boolean, required: true },
   Movies: { type: mongoose.Schema.Types.ObjectId, ref: "Movies" },
+  genre: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movies" }],
+  language: [{ type: mongoose.Schema.Types.ObjectId, ref: "Language" }],
+  views:{ type: Number,default:0 }
 });
 const Shorts = mongoose.model("Shorts", shortsSchema);
 

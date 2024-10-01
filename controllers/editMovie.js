@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const Shorts = require("../models/Shorts");
 const Layout = require("../models/Layout");
+const Genre = require("../models/genre");
 exports.editMovie = async (req, res, next) => {
   const { id, title, layouts, freeVideos, visible, genre } = req.body;
   // console.log(id);
@@ -27,6 +28,9 @@ exports.editMovie = async (req, res, next) => {
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   }); //i need to check if any id is already present then dont return it in parsed layout because it will come twice
+  const parsedGenre=JSON.parse(genre).map((current) => {
+    return current._id;
+  });
   try {
     const shortsFolderLocation = path.join(
       __dirname,
@@ -82,7 +86,7 @@ exports.editMovie = async (req, res, next) => {
         const result = await getMovies.updateOne({
           name: title,
           fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
-          genre: genre,
+          genre: parsedGenre,
           visible: visible,
           layouts: parsedLayout,
           freeVideos: freeVideos,
@@ -96,6 +100,19 @@ exports.editMovie = async (req, res, next) => {
             if (layoutResponse) {
               layoutResponse.linkedMovies.push(id);
               await layoutResponse.save();
+            }
+          });
+          await Promise.all(pendingPromises);
+        }
+        if (parsedGenre.length > 0) {
+          const pendingPromises = parsedGenre.map(async (current) => {
+            const genreResponse = await Genre.findOne({
+              _id: current,
+              linkedMovies: { $ne: id },
+            });
+            if (genreResponse) {
+              genreResponse.linkedMovies.push(id);
+              await genreResponse.save();
             }
           });
           await Promise.all(pendingPromises);
@@ -138,7 +155,7 @@ exports.editMovie = async (req, res, next) => {
         const result = await getMovies.updateOne({
           name: title,
           fileLocation: getMovies.fileLocation,
-          genre: genre,
+          genre: parsedGenre,
           visible: visible,
           layouts: parsedLayout,
           freeVideos: freeVideos,
@@ -152,6 +169,18 @@ exports.editMovie = async (req, res, next) => {
             if (layoutResponse) {
               layoutResponse.linkedMovies.push(id);
               await layoutResponse.save();
+            }
+          });
+          await Promise.all(pendingPromises);
+        }  if (parsedGenre.length > 0) {
+          const pendingPromises = parsedGenre.map(async (current) => {
+            const genreResponse = await Genre.findOne({
+              _id: current,
+              linkedMovies: { $ne: id },
+            });
+            if (genreResponse) {
+              genreResponse.linkedMovies.push(id);
+              await genreResponse.save();
             }
           });
           await Promise.all(pendingPromises);
