@@ -24,6 +24,8 @@ const { addLanguage } = require("../controllers/addLanguage");
 const { getAllLLanguages } = require("../controllers/getAllLAnguage");
 const { deleteLanguage } = require("../controllers/deleteLanguage");
 const { getAllUsers } = require("../controllers/getAllUSers");
+const { getUserDetails } = require("../controllers/getUserDetails");
+const { deleteLayout } = require("../controllers/deleteLAyout");
 
 const upload = multer();
 const routes = express.Router();
@@ -61,5 +63,8 @@ routes.delete("/deleteGenre/:id", deleteGenres);
 routes.post("/addLanguage", upload.single("icon"), addLanguage);
 routes.get("/allLanguages", getAllLLanguages);
 routes.delete("/deleteLanguage/:id", deleteLanguage);
+routes.delete("/deleteLayout/:id", deleteLayout);
 routes.get("/allUsers", getAllUsers);
+routes.post("/getUserDetails", getUserDetails);
+
 module.exports = routes;

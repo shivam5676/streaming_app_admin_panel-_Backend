@@ -16,6 +16,7 @@ exports.getAllUsers = async (req, res, next) => {
     // ]);
     // console.log(allMovies[0].layouts)
     return res.status(200).json({ allMovies });
+    
   } catch (err) {
     console.log(err);
   }
