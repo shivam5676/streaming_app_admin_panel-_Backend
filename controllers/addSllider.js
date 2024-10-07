@@ -13,6 +13,7 @@ exports.addSlider = async (req, res, next) => {
       linkedMovie: movieId,
       visible
     });
+    
     console.log(sliderResponse);
     if (!sliderResponse) {
       return res
