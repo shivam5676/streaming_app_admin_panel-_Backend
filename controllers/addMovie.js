@@ -100,7 +100,8 @@ exports.addMovie = async (req, res) => {
       movie.shorts.push(...shortsIds);
       await movie.save();
     }
-    return res.status(200).json({ msg: "file saved successfully" });
+    
+    return res.status(200).json({ msg: "file saved successfully",movieData:movie });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ msg: "something went wrong", err: err });
