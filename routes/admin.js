@@ -26,6 +26,7 @@ const { deleteLanguage } = require("../controllers/deleteLanguage");
 const { getAllUsers } = require("../controllers/getAllUSers");
 const { getUserDetails } = require("../controllers/getUserDetails");
 const { deleteLayout } = require("../controllers/deleteLAyout");
+const { updateUserDetails } = require("../controllers/updateUserDetails");
 
 const upload = multer();
 const routes = express.Router();
@@ -66,5 +67,7 @@ routes.delete("/deleteLanguage/:id", deleteLanguage);
 routes.delete("/deleteLayout/:id", deleteLayout);
 routes.get("/allUsers", getAllUsers);
 routes.post("/getUserDetails", getUserDetails);
+routes.put("/updateUserDetails", updateUserDetails);
+// updateUserDetails
 
 module.exports = routes;
