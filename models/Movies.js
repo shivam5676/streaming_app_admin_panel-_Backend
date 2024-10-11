@@ -1,19 +1,24 @@
 const mongoose = require("mongoose");
 const Language = require("./language");
-const movieSchema = new mongoose.Schema({
-  name: String,
-  genre: String,
-  layout: String,
-  freeVideos: { type: Number, required: true },
-  visible: { type: Boolean, required: true },
-  fileLocation: String,
-  shorts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Shorts" }],
-  layouts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Layout" }],
-  genre: [{ type: mongoose.Schema.Types.ObjectId, ref: "Genre" }],
-  language: [{ type: mongoose.Schema.Types.ObjectId, ref: "Language" }],
-  trailerUrl: String,
-  parts: Number,
-  views: { type: Number,default:0 },
-});
+const movieSchema = new mongoose.Schema(
+  {
+    name: String,
+    genre: String,
+    layout: String,
+    freeVideos: { type: Number, required: true },
+    visible: { type: Boolean, required: true },
+    fileLocation: String,
+    shorts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Shorts" }],
+    layouts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Layout" }],
+    genre: [{ type: mongoose.Schema.Types.ObjectId, ref: "Genre" }],
+    language: [{ type: mongoose.Schema.Types.ObjectId, ref: "Language" }],
+    trailerUrl: String,
+    parts: Number,
+    views: { type: Number, default: 0 },
+  },
+  {
+    timestamps: true, // This adds createdAt and updatedAt automatically
+  }
+);
 const Movies = mongoose.model("Movies", movieSchema);
 module.exports = Movies;

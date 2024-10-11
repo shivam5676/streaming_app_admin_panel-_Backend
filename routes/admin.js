@@ -27,6 +27,7 @@ const { getAllUsers } = require("../controllers/getAllUSers");
 const { getUserDetails } = require("../controllers/getUserDetails");
 const { deleteLayout } = require("../controllers/deleteLAyout");
 const { updateUserDetails } = require("../controllers/updateUserDetails");
+const { getDashboardData } = require("../controllers/getDAshBoardData");
 
 const upload = multer();
 const routes = express.Router();
@@ -68,6 +69,7 @@ routes.delete("/deleteLayout/:id", deleteLayout);
 routes.get("/allUsers", getAllUsers);
 routes.post("/getUserDetails", getUserDetails);
 routes.put("/updateUserDetails", updateUserDetails);
+routes.get("/getDashboard/:type",getDashboardData)
 // updateUserDetails
 
 module.exports = routes;
