@@ -6,6 +6,8 @@ const sliderSchema = new mongoose.Schema({
   promotionalImageUrl:String,
   RedirectionLink:String,
   visible:Boolean
+},{
+  timestamps: true, // This adds createdAt and updatedAt automatically
 });
 
 const Slider=mongoose.model("Slider",sliderSchema)

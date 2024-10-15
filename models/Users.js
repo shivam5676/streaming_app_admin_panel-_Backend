@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
   selectedLanguages: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Language" },
   ],
+},{
+  timestamps: true, // This adds createdAt and updatedAt automatically
 });
 const Users = mongoose.model("Users", userSchema);
 module.exports = Users;

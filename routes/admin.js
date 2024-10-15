@@ -28,6 +28,9 @@ const { getUserDetails } = require("../controllers/getUserDetails");
 const { deleteLayout } = require("../controllers/deleteLAyout");
 const { updateUserDetails } = require("../controllers/updateUserDetails");
 const { getDashboardData } = require("../controllers/getDAshBoardData");
+const { fetchContentViews } = require("../controllers/fetchContentViews");
+const { fetchTopMovies } = require("../controllers/fetchTopMovies");
+const { fetchLatestUser } = require("../controllers/fetchLatestUSer");
 
 const upload = multer();
 const routes = express.Router();
@@ -70,6 +73,9 @@ routes.get("/allUsers", getAllUsers);
 routes.post("/getUserDetails", getUserDetails);
 routes.put("/updateUserDetails", updateUserDetails);
 routes.get("/getDashboard/:type",getDashboardData)
+routes.get("/getContentViews/:type",fetchContentViews)
 // updateUserDetails
+routes.get("/fetchTopMovies/:type",fetchTopMovies)
+routes.get("/fetchLatestUsers/:type",fetchLatestUser)
 
 module.exports = routes;
