@@ -8,6 +8,8 @@ const shortsSchema = new mongoose.Schema({
   genre: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movies" }],
   language: [{ type: mongoose.Schema.Types.ObjectId, ref: "Language" }],
   views:{ type: Number,default:0 }
+},{
+  timestamps: true, // This adds createdAt and updatedAt automatically
 });
 const Shorts = mongoose.model("Shorts", shortsSchema);
 
