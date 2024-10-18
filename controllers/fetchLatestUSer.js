@@ -32,10 +32,11 @@ exports.fetchLatestUser = async (req, res, next) => {
     })
       .sort({ views: 1 }) // Sort by views in descending order
       .limit(10);
+      console.log(userData)
     if (userData.length === 0) {
       return res.status(404).json({
-        movies: [],
-        message: "No movies found for the given criteria",
+        users: [],
+        message: "No users found for the given criteria",
       });
     }
     res.status(200).json({ users: userData });
