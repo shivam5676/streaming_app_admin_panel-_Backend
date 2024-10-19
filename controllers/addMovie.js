@@ -11,9 +11,27 @@ exports.addMovie = async (req, res) => {
   if (!req.files.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
-  const { title, layouts, freeVideos, visible, genre, trailerUrl,language } = req.body;
-  console.log(JSON.parse(language));
+  const { title, layouts, freeVideos, visible, genre, trailerUrl, language } =
+    req.body;
+
+  // console.log(JSON.parse(language));
   // return;
+  if (!title) {
+    return res.status(400).json({ msg: "please provide title" });
+  }
+  if (!layouts||!JSON.parse(layouts)) {
+    return res.status(400).json({ msg: "please select layout" });
+  }
+  if (!genre||!JSON.parse(genre)) {
+    return res.status(400).json({ msg: "please provide genre" });
+  }
+  if (!trailerUrl) {
+    return res.status(400).json({ msg: "please provide trailerUrl" });
+  }
+  if (!language||!JSON.parse(language)) {
+    return res.status(400).json({ msg: "please provide content language" });
+  }
+
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
@@ -24,12 +42,11 @@ exports.addMovie = async (req, res) => {
     return current._id;
   });
   // return;
-  if (!title) {
-    return res.status(400).json({ msg: "please provide title" });
-  }
+
   const thumbnailPath = path.join(__dirname, "..", "uploads", "thumbnail");
 
   const pathExists = fs.existsSync(thumbnailPath);
+
 
   if (!pathExists) {
     fs.mkdirSync(thumbnailPath, { recursive: true });
@@ -56,7 +73,7 @@ exports.addMovie = async (req, res) => {
       layouts: parsedLayout,
       freeVideos: freeVideos,
       trailerUrl,
-      parts: req.files.shorts.length || 0,
+      parts: req.files?.shorts?.length || 0,
     });
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
@@ -100,8 +117,10 @@ exports.addMovie = async (req, res) => {
       movie.shorts.push(...shortsIds);
       await movie.save();
     }
-    
-    return res.status(200).json({ msg: "file saved successfully",movieData:movie });
+
+    return res
+      .status(200)
+      .json({ msg: "file saved successfully", movieData: movie });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ msg: "something went wrong", err: err });
