@@ -3,7 +3,15 @@ const Movies = require("../models/Movies");
 const mongoose = require("mongoose");
 const { get } = require("../routes/admin");
 exports.addLayout = async (req, res, next) => {
-  const { name, Description, linkedMovies ,visible} = req.body;
+  const { name, Description, linkedMovies, visible } = req.body;
+  if (!name) {
+    return res.status(400).json({ msg: "please provide name for layout" });
+  }
+  if (visible === "true" && linkedMovies.length == 0) {
+    return res.status(400).json({
+      msg: "You need to link a movie because you want to make this layout visible otherwise you can select visibility as false",
+    });
+  }
   console.log(linkedMovies);
   // return;
 
@@ -12,12 +20,11 @@ exports.addLayout = async (req, res, next) => {
     const layoutResponse = await Layout.create({
       name: name,
       Description: Description,
-      visible
+      visible,
       // linkedMovies: linkedMovies,
     });
     console.log(layoutResponse);
     if (linkedMovies.length > 0) {
-      
       const moviesResponses = linkedMovies.map(async (currentMovie) => {
         const getMovie = await Movies.findById(currentMovie._id);
         if (getMovie) {
@@ -30,7 +37,6 @@ exports.addLayout = async (req, res, next) => {
         }
       });
       await Promise.all(moviesResponses);
-      
     }
     return res.status(200).json({ layoutResponse });
   } catch (err) {
