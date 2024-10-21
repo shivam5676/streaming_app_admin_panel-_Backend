@@ -12,7 +12,7 @@ exports.addLayout = async (req, res, next) => {
       msg: "You need to link a movie because you want to make this layout visible otherwise you can select visibility as false",
     });
   }
-  console.log(linkedMovies);
+  // console.log(linkedMovies,"...>");
   // return;
 
   //   console.log(movies);
@@ -23,21 +23,31 @@ exports.addLayout = async (req, res, next) => {
       visible,
       // linkedMovies: linkedMovies,
     });
-    console.log(layoutResponse);
+
     if (linkedMovies.length > 0) {
-      const moviesResponses = linkedMovies.map(async (currentMovie) => {
+      const moviesResponses = [];
+
+      for (const currentMovie of linkedMovies) {
         const getMovie = await Movies.findById(currentMovie._id);
         if (getMovie) {
           console.log(getMovie, "getMovie");
           console.log(layoutResponse, "layout response.......");
+
           getMovie.layouts.push(layoutResponse._id);
           layoutResponse.linkedMovies.push(getMovie._id);
+
+          // Save the movie
           await getMovie.save();
           console.log(await layoutResponse.save(), "......new response");
+
+          // Store the promise result if needed
+          moviesResponses.push(getMovie);
         }
-      });
-      await Promise.all(moviesResponses);
+      }
+
+      // If you need to do something with moviesResponses, you can do that here
     }
+    console.log(layoutResponse);
     return res.status(200).json({ layoutResponse });
   } catch (err) {
     console.log(err);

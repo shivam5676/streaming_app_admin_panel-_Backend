@@ -32,6 +32,8 @@ const { fetchContentViews } = require("../controllers/fetchContentViews");
 const { fetchTopMovies } = require("../controllers/fetchTopMovies");
 const { fetchLatestUser } = require("../controllers/fetchLatestUSer");
 const { adminLogin } = require("../controllers/auth/adminLogin");
+const uploadVideoToTencent = require("../controllers/videoUploader");
+
 
 const upload = multer();
 const routes = express.Router();
@@ -79,5 +81,5 @@ routes.get("/getContentViews/:type", fetchContentViews);
 routes.get("/fetchTopMovies/:type", fetchTopMovies);
 routes.get("/fetchLatestUsers/:type", fetchLatestUser);
 routes.post("/login", adminLogin);
-
+routes.get("/testUpload",uploadVideoToTencent)
 module.exports = routes;
