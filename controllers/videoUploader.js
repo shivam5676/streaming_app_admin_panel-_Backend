@@ -1,14 +1,17 @@
 const tencentcloud = require("tencentcloud-sdk-nodejs");
 const COS = require("cos-nodejs-sdk-v5");
 const fs = require("fs");
+const path = require('path');
+const videoFilePath = path.join(__dirname,'..','uploads',"shorts","[appsgolem_1728276998210.mp4"); // Use __dirname for current directory
+console.log(videoFilePath,"ilu")
 
 const VodClient = tencentcloud.vod.v20180717.Client;
 
 // Initialize the client with your Tencent Cloud credentials
 const clientConfig = {
   credential: {
-    secretId: "your-secretId", // Replace with your Tencent Cloud SecretId
-    secretKey: "your-secretKey", // Replace with your Tencent Cloud SecretKey
+    secretId: "IKID03M1zmvDW0bSPTbnw3DTn7To5Kh2Mg8h", // Replace with your Tencent Cloud SecretId
+    secretKey: "wywqmaGqJJHFHZwMs6I78R8pl2Mxlkji", // Replace with your Tencent Cloud SecretKey
   },
   region: "ap-hongkong", // Correct region
   profile: {
@@ -23,7 +26,7 @@ const client = new VodClient(clientConfig);
 // Function to upload a video
 function uploadVideo(videoFilePath) {
   const params = {
-    MediaType: "video", // The type of media you're uploading
+    MediaType: "MP4", // The type of media you're uploading
     SubAppId: 1500033163, // Optional: Pass SubAppId if applicable
   };
 
@@ -74,7 +77,7 @@ function uploadVideo(videoFilePath) {
 
 // Example usage
 const uploadVideoToTencent = () => {
-  uploadVideo("uploads/shorts/appsgolem_1728276998210.mp4");
+  uploadVideo(videoFilePath);
 };
 
 // Export the function
