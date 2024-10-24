@@ -2,16 +2,16 @@ const tencentcloud = require("tencentcloud-sdk-nodejs");
 const COS = require("cos-nodejs-sdk-v5");
 const fs = require("fs");
 const path = require('path');
-const videoFilePath = path.join(__dirname,'..','uploads',"shorts","[appsgolem_1728276998210.mp4"); // Use __dirname for current directory
-console.log(videoFilePath,"ilu")
+const videoFilePath = path.join(__dirname,'..','uploads',"shorts","v_1728366358273.mp4"); // Use __dirname for current directory
+console.log(videoFilePath)
 
 const VodClient = tencentcloud.vod.v20180717.Client;
 
 // Initialize the client with your Tencent Cloud credentials
 const clientConfig = {
   credential: {
-    secretId: "IKID03M1zmvDW0bSPTbnw3DTn7To5Kh2Mg8h", // Replace with your Tencent Cloud SecretId
-    secretKey: "wywqmaGqJJHFHZwMs6I78R8pl2Mxlkji", // Replace with your Tencent Cloud SecretKey
+    secretId: "IKID67v3DII5iEYikhhmy37DKH8tUxGi4FG6", // Replace with your Tencent Cloud SecretId
+    secretKey: "87uDH7mNm3DA5ta6RcaMxKVUIsENIFBt", // Replace with your Tencent Cloud SecretKey
   },
   region: "ap-hongkong", // Correct region
   profile: {
@@ -27,7 +27,7 @@ const client = new VodClient(clientConfig);
 function uploadVideo(videoFilePath) {
   const params = {
     MediaType: "MP4", // The type of media you're uploading
-    SubAppId: 1500033163, // Optional: Pass SubAppId if applicable
+    SubAppId: 1326678901, // Optional: Pass SubAppId if applicable
   };
 
   // Step 1: Apply for upload

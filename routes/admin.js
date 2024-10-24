@@ -33,6 +33,8 @@ const { fetchTopMovies } = require("../controllers/fetchTopMovies");
 const { fetchLatestUser } = require("../controllers/fetchLatestUSer");
 const { adminLogin } = require("../controllers/auth/adminLogin");
 const uploadVideoToTencent = require("../controllers/videoUploader");
+const {  addCheckedInSlide } = require("../controllers/addCheckedInSlide");
+const { fetchCheckedInSlide } = require("../controllers/fetchCheckedInSlide");
 
 
 const upload = multer();
@@ -82,4 +84,6 @@ routes.get("/fetchTopMovies/:type", fetchTopMovies);
 routes.get("/fetchLatestUsers/:type", fetchLatestUser);
 routes.post("/login", adminLogin);
 routes.get("/testUpload",uploadVideoToTencent)
+routes.post("/addPointSlide",addCheckedInSlide)
+routes.get("/allCheckedInSlide",fetchCheckedInSlide)
 module.exports = routes;
