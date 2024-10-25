@@ -2,7 +2,16 @@ const express = require("express");
 const cors = require("cors");
 const path=require("path")
 const connectDb = require("./util/database");
-
+require("./models/Admin")
+require("./models/DailyCheckInTask")
+require("./models/Layout")
+require("./models/Movies")
+require("./models/Shorts")
+require("./models/Slider")
+require("./models/Users")
+require("./models/genre")
+require("./models/language")
+require("./models/checkInPoints")
 const app = express();
 connectDb();
 
