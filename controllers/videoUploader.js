@@ -1,9 +1,16 @@
 const tencentcloud = require("tencentcloud-sdk-nodejs");
 const COS = require("cos-nodejs-sdk-v5");
 const fs = require("fs");
-const path = require('path');
-const videoFilePath = path.join(__dirname,'..','uploads',"shorts","v_1728366358273.mp4"); // Use __dirname for current directory
-console.log(videoFilePath)
+const path = require("path");
+const bodyParser = require("body-parser");
+// const videoFilePath = path.join(
+//   __dirname,
+//   "..",
+//   "uploads",
+//   "shorts",
+//   "v_1728366358273.mp4"
+// ); // Use __dirname for current directory
+// console.log(videoFilePath);
 
 const VodClient = tencentcloud.vod.v20180717.Client;
 
@@ -24,60 +31,74 @@ const clientConfig = {
 const client = new VodClient(clientConfig);
 
 // Function to upload a video
-function uploadVideo(videoFilePath) {
-  const params = {
-    MediaType: "MP4", // The type of media you're uploading
-    SubAppId: 1326678901, // Optional: Pass SubAppId if applicable
-  };
-
-  // Step 1: Apply for upload
-  client.ApplyUpload(params, (err, response) => {
-    if (err) {
-      console.error("Error applying for upload:", err);
-      return;
-    }
-
-    const { StorageBucket, StorageRegion, VodSessionKey, MediaStoragePath } = response;
-
-    // Step 2: Upload video to COS using the information from ApplyUpload
-    const cos = new COS({
-      SecretId: clientConfig.credential.secretId,
-      SecretKey: clientConfig.credential.secretKey,
-    });
-
-    const uploadParams = {
-      Bucket: StorageBucket,
-      Region: StorageRegion,
-      Key: MediaStoragePath,
-      Body: fs.createReadStream(videoFilePath), // Read video file
+function uploadVideo(videoFile) {
+  return new Promise((resolve, reject) => {
+    const params = {
+      MediaType: "MP4", // The type of media you're uploading
+      SubAppId: 1326678901, // Optional: Pass SubAppId if applicable
     };
 
-    cos.putObject(uploadParams, (uploadErr, uploadData) => {
-      if (uploadErr) {
-        console.error("Error uploading video:", uploadErr);
-      } else {
-        console.log("Video uploaded successfully:", uploadData);
-
-        // Step 3: Commit the upload
-        const commitParams = {
-          VodSessionKey: VodSessionKey,
-        };
-
-        client.CommitUpload(commitParams, (commitErr, commitResponse) => {
-          if (commitErr) {
-            console.error("Error committing upload:", commitErr);
-          } else {
-            console.log("Upload committed successfully:", commitResponse);
-          }
-        });
+    // Step 1: Apply for upload
+    client.ApplyUpload(params, (err, response) => {
+      if (err) {
+        console.error("Error applying for upload:", err);
+        return;
       }
+      console.log(response, "response...........>");
+      const { StorageBucket, StorageRegion, VodSessionKey, MediaStoragePath } =
+        response;
+
+      // Step 2: Upload video to COS using the information from ApplyUpload
+      const cos = new COS({
+        SecretId: response.TempCertificate.SecretId,
+        SecretKey: response.TempCertificate.SecretKey,
+        XCosSecurityToken: response.TempCertificate.Token, // Add this token
+      });
+      console.log(videoFile, "vfilke")
+      const uploadParams = {
+        Bucket: StorageBucket,
+        Region: StorageRegion,
+        Key: MediaStoragePath,
+        // Body: fs.createReadStream(videoFilePath), // Read video file
+        Body: videoFile
+      };
+
+      cos.putObject(uploadParams, (uploadErr, uploadData) => {
+        if (uploadErr) {
+          console.error("Error uploading video:", uploadErr);
+        } else {
+          console.log("Video uploaded successfully:", uploadData);
+
+          // Step 3: Commit the upload
+          const commitParams = {
+            VodSessionKey: VodSessionKey,
+          };
+
+          client.CommitUpload(commitParams, (commitErr, commitResponse) => {
+            if (commitErr) {
+              console.error("Error committing upload:", commitErr);
+              reject(commitErr)
+            } else {
+              console.log("Upload committed successfully:", commitResponse);
+              resolve(commitResponse.MediaUrl)
+
+
+            }
+          });
+        }
+      });
     });
-  });
+  })
+
 }
 
 // Example usage
-const uploadVideoToTencent = () => {
-  uploadVideo(videoFilePath);
+const uploadVideoToTencent = (video) => {
+  // return uploadVideo(video)
+  return uploadVideo(video).then(mediaUrl => {
+    console.log(mediaUrl, "promise")
+    return mediaUrl
+  }).catch(err => console.log(err))
 };
 
 // Export the function
