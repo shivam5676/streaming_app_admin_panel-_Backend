@@ -5,6 +5,7 @@ const path = require("path");
 const { time } = require("console");
 const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
+const uploadVideoToTencent = require("./videoUploader");
 exports.addMovie = async (req, res) => {
   // console.log("req is coming",  req.body);
 
@@ -19,16 +20,16 @@ exports.addMovie = async (req, res) => {
   if (!title) {
     return res.status(400).json({ msg: "please provide title" });
   }
-  if (!layouts||!JSON.parse(layouts)) {
+  if (!layouts || !JSON.parse(layouts)) {
     return res.status(400).json({ msg: "please select layout" });
   }
-  if (!genre||!JSON.parse(genre)) {
+  if (!genre || !JSON.parse(genre)) {
     return res.status(400).json({ msg: "please provide genre" });
   }
   if (!trailerUrl) {
     return res.status(400).json({ msg: "please provide trailerUrl" });
   }
-  if (!language||!JSON.parse(language)) {
+  if (!language || !JSON.parse(language)) {
     return res.status(400).json({ msg: "please provide content language" });
   }
 
@@ -85,7 +86,7 @@ exports.addMovie = async (req, res) => {
       });
       await Promise.all(pendingPromises);
     }
-    console.log(movie);
+    // console.log(movie);
     const shortsFolderLocation = path.join(
       __dirname,
       "..",
@@ -98,14 +99,17 @@ exports.addMovie = async (req, res) => {
     }
     if (req.files.shorts && req.files.shorts.length > 0) {
       const shortsPromises = req.files.shorts.map(async (current) => {
-        const shortsName = `${
-          current.originalname.split(".")[0]
-        }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+        const shortsName = `${current.originalname.split(".")[0]
+          }_${Date.now()}.${current.mimetype.split("/")[1]}`;
         const shortsPath = path.join(shortsFolderLocation, shortsName);
         const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
+        const fileUrl = await uploadVideoToTencent(current.buffer)
+        
+
         const short = await Shorts.create({
           name: current.originalname,
-          fileLocation: `uploads/shorts/${shortsName}`,
+          // fileLocation: `uploads/shorts/${shortsName}`,
+          fileLocation: fileUrl,
           genre: "action",
           visible: true,
           genre: parsedGenre,
