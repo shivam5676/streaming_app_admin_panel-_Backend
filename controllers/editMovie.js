@@ -4,6 +4,7 @@ const fs = require("fs");
 const Shorts = require("../models/Shorts");
 const Layout = require("../models/Layout");
 const Genre = require("../models/genre");
+const uploadVideoToTencent = require("./videoUploader");
 exports.editMovie = async (req, res, next) => {
   const { id, title, layouts, freeVideos, visible, genre } = req.body;
   // console.log(id);
@@ -28,9 +29,11 @@ exports.editMovie = async (req, res, next) => {
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   }); //i need to check if any id is already present then dont return it in parsed layout because it will come twice
-  const parsedGenre=JSON.parse(genre).map((current) => {
+  const parsedGenre = JSON.parse(genre).map((current) => {
     return current._id;
   });
+  //  console.log(parsedGenre)
+  // return
   try {
     const shortsFolderLocation = path.join(
       __dirname,
@@ -80,7 +83,7 @@ exports.editMovie = async (req, res, next) => {
         req.files.thumbnail[0].buffer
       );
 
-      
+
       try {
         unlinkMovieHandler();
         const result = await getMovies.updateOne({
@@ -121,15 +124,17 @@ exports.editMovie = async (req, res, next) => {
         // console.log(response)
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
-            const shortsName = `${
-              current.originalname.split(".")[0]
-            }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+            const shortsName = `${current.originalname.split(".")[0]
+              }_${Date.now()}.${current.mimetype.split("/")[1]}`;
             const shortsPath = path.join(shortsFolderLocation, shortsName);
-            const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
+            // const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
+            const videoData = await uploadVideoToTencent(current.buffer)
             const short = await Shorts.create({
               name: current.originalname,
-              fileLocation: `uploads/shorts/${shortsName}`,
-              genre: "action",
+              // fileLocation: `uploads/shorts/${shortsName}`,
+              fileLocation: videoData.MediaUrl,
+              fileId: videoData.FileId,
+              genre: parsedGenre,
               visible: true,
             });
             return short._id;
@@ -172,7 +177,7 @@ exports.editMovie = async (req, res, next) => {
             }
           });
           await Promise.all(pendingPromises);
-        }  if (parsedGenre.length > 0) {
+        } if (parsedGenre.length > 0) {
           const pendingPromises = parsedGenre.map(async (current) => {
             const genreResponse = await Genre.findOne({
               _id: current,
@@ -187,15 +192,18 @@ exports.editMovie = async (req, res, next) => {
         }
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
-            const shortsName = `${
-              current.originalname.split(".")[0]
-            }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+            const shortsName = `${current.originalname.split(".")[0]
+              }_${Date.now()}.${current.mimetype.split("/")[1]}`;
             const shortsPath = path.join(shortsFolderLocation, shortsName);
-            const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
+            // const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
+            const videoData = await uploadVideoToTencent(current.buffer)
+
             const short = await Shorts.create({
               name: current.originalname,
-              fileLocation: `uploads/shorts/${shortsName}`,
-              genre: "action",
+              // fileLocation: `uploads/shorts/${shortsName}`,
+              fileLocation: videoData.MediaUrl,
+              fileId: videoData.FileId,
+              genre: parsedGenre,
               visible: true,
             });
             return short._id;

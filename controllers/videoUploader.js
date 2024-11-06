@@ -80,7 +80,7 @@ function uploadVideo(videoFile) {
               reject(commitErr)
             } else {
               console.log("Upload committed successfully:", commitResponse);
-              resolve(commitResponse.MediaUrl)
+              resolve({MediaUrl:commitResponse.MediaUrl,FileId:commitResponse.FileId})
 
 
             }
@@ -95,11 +95,12 @@ function uploadVideo(videoFile) {
 // Example usage
 const uploadVideoToTencent = (video) => {
   // return uploadVideo(video)
-  return uploadVideo(video).then(mediaUrl => {
-    console.log(mediaUrl, "promise")
-    return mediaUrl
+  return uploadVideo(video).then((videoData) => {
+    console.log(videoData, "promise")
+    return videoData
   }).catch(err => console.log(err))
 };
+
 
 // Export the function
 module.exports = uploadVideoToTencent;
