@@ -6,6 +6,9 @@ exports.deleteMovies = async (req, res, next) => {
   console.log(id);
   try {
     const deleteResponse = await Movies.findByIdAndDelete(id);
+    console.log(deleteResponse, "dlresponse")
+    //i need to add delte all related shorts from tencent cloud
+    
     if (!deleteResponse) {
       return res
         .status(400)
@@ -13,6 +16,6 @@ exports.deleteMovies = async (req, res, next) => {
     }
     return res.status(200).json({ msg: "deleted Successfully" });
   } catch (err) {
-    return res.status(400).json({ msg: err });
+    return res.status(400).json({ msg: err }); ``
   }
 };

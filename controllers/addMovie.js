@@ -103,13 +103,14 @@ exports.addMovie = async (req, res) => {
           }_${Date.now()}.${current.mimetype.split("/")[1]}`;
         const shortsPath = path.join(shortsFolderLocation, shortsName);
         const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-        const fileUrl = await uploadVideoToTencent(current.buffer)
-        
+        const videoData = await uploadVideoToTencent(current.buffer)
+
 
         const short = await Shorts.create({
           name: current.originalname,
           // fileLocation: `uploads/shorts/${shortsName}`,
-          fileLocation: fileUrl,
+          fileLocation: videoData.MediaUrl,
+          fileId: videoData.FileId,
           genre: "action",
           visible: true,
           genre: parsedGenre,
