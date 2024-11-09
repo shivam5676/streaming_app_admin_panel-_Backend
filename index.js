@@ -15,6 +15,7 @@ require("./models/checkInPoints")
 const app = express();
 connectDb();
 
+
 app.use(express.json())
 app.use('/thumbnails', express.static(path.join(__dirname, 'uploads', 'thumbnail')));
 app.use('/video', express.static(path.join(__dirname, 'uploads', 'shorts')))

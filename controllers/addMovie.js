@@ -7,8 +7,8 @@ const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
 const uploadVideoToTencent = require("./videoUploader");
 exports.addMovie = async (req, res) => {
-  // console.log("req is coming",  req.body);
 
+  // return
   if (!req.files.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
@@ -26,13 +26,14 @@ exports.addMovie = async (req, res) => {
   if (!genre || !JSON.parse(genre)) {
     return res.status(400).json({ msg: "please provide genre" });
   }
-  if (!trailerUrl) {
-    return res.status(400).json({ msg: "please provide trailerUrl" });
+  if (!req.files?.trailerVideo && !req.files.trailerVideo) {
+    return res.status(400).json({ msg: "please provide trailerUrl or trailer video" });
   }
   if (!language || !JSON.parse(language)) {
     return res.status(400).json({ msg: "please provide content language" });
   }
 
+  
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
@@ -64,7 +65,10 @@ exports.addMovie = async (req, res) => {
       filePath,
       req.files.thumbnail[0].buffer
     );
-
+    let trailerUrlTencent = undefined;
+    if (req.files?.trailerVideo && req.files.trailerVideo.length > 0) {
+      trailerUrlTencent = await uploadVideoToTencent(req.files.trailerVideo[0].buffer);
+    }
     const movie = await Movies.create({
       name: title,
       fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
@@ -73,7 +77,8 @@ exports.addMovie = async (req, res) => {
       visible: visible,
       layouts: parsedLayout,
       freeVideos: freeVideos,
-      trailerUrl,
+      trailerUrl: trailerUrl || trailerUrlTencent?.MediaUrl,
+      trailerUrlFileId: trailerUrlTencent?.FileId,
       parts: req.files?.shorts?.length || 0,
     });
     if (movie) {
