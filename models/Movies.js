@@ -13,6 +13,7 @@ const movieSchema = new mongoose.Schema(
     genre: [{ type: mongoose.Schema.Types.ObjectId, ref: "Genre" }],
     language: [{ type: mongoose.Schema.Types.ObjectId, ref: "Language" }],
     trailerUrl: String,
+    trailerUrlFileId:String,
     parts: Number,
     views: { type: Number, default: 0 },
   },

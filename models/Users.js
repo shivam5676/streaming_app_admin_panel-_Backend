@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
   BookMark: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Shorts" },
   ],
+  LikedVideos:  [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Shorts" },
+  ],
 }, {
   timestamps: true, // This adds createdAt and updatedAt automatically
 });
