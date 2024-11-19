@@ -3,6 +3,8 @@ const COS = require("cos-nodejs-sdk-v5");
 const fs = require("fs");
 const path = require("path");
 const bodyParser = require("body-parser");
+
+const transcodeTencentVideo = require("../controllers/transcodeVideo");
 // const videoFilePath = path.join(
 //   __dirname,
 //   "..",
@@ -97,6 +99,9 @@ const uploadVideoToTencent = (video) => {
   // return uploadVideo(video)
   return uploadVideo(video).then((videoData) => {
     console.log(videoData, "promise")
+    const fileId = videoData.FileId; // Extract FileId
+    // const templateIds = [101302, 101305, 101308];
+    transcodeTencentVideo(fileId,[101302, 101305, 101308],client)
     return videoData
   }).catch(err => console.log(err))
 };

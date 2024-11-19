@@ -109,8 +109,8 @@ exports.addMovie = async (req, res) => {
         const shortsPath = path.join(shortsFolderLocation, shortsName);
         const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
         const videoData = await uploadVideoToTencent(current.buffer)
-
-
+console.log(videoData)
+return
         const short = await Shorts.create({
           name: current.originalname,
           // fileLocation: `uploads/shorts/${shortsName}`,
