@@ -7,7 +7,6 @@ const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
 const uploadVideoToTencent = require("./videoUploader");
 exports.addMovie = async (req, res) => {
-
   // return
   if (!req.files.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
@@ -27,13 +26,14 @@ exports.addMovie = async (req, res) => {
     return res.status(400).json({ msg: "please provide genre" });
   }
   if (!req.files?.trailerVideo && !req.files.trailerVideo) {
-    return res.status(400).json({ msg: "please provide trailerUrl or trailer video" });
+    return res
+      .status(400)
+      .json({ msg: "please provide trailerUrl or trailer video" });
   }
   if (!language || !JSON.parse(language)) {
     return res.status(400).json({ msg: "please provide content language" });
   }
 
-  
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
@@ -48,7 +48,6 @@ exports.addMovie = async (req, res) => {
   const thumbnailPath = path.join(__dirname, "..", "uploads", "thumbnail");
 
   const pathExists = fs.existsSync(thumbnailPath);
-
 
   if (!pathExists) {
     fs.mkdirSync(thumbnailPath, { recursive: true });
@@ -67,7 +66,9 @@ exports.addMovie = async (req, res) => {
     );
     let trailerUrlTencent = undefined;
     if (req.files?.trailerVideo && req.files.trailerVideo.length > 0) {
-      trailerUrlTencent = await uploadVideoToTencent(req.files.trailerVideo[0].buffer);
+      trailerUrlTencent = await uploadVideoToTencent(
+        req.files.trailerVideo[0].buffer
+      );
     }
     const movie = await Movies.create({
       name: title,
@@ -77,9 +78,12 @@ exports.addMovie = async (req, res) => {
       visible: visible,
       layouts: parsedLayout,
       freeVideos: freeVideos,
-      trailerUrl: trailerUrl || trailerUrlTencent?.MediaUrl,
+      trailerUrl: trailerUrl || trailerUrlTencent.multipleQualityUrls[0].Url,
       trailerUrlFileId: trailerUrlTencent?.FileId,
       parts: req.files?.shorts?.length || 0,
+      low: trailerUrlTencent.multipleQualityUrls[1].Url,
+      medium: trailerUrlTencent.multipleQualityUrls[2].Url,
+      high: trailerUrlTencent.multipleQualityUrls[3].Url,
     });
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
@@ -104,23 +108,28 @@ exports.addMovie = async (req, res) => {
     }
     if (req.files.shorts && req.files.shorts.length > 0) {
       const shortsPromises = req.files.shorts.map(async (current) => {
-        const shortsName = `${current.originalname.split(".")[0]
-          }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+        const shortsName = `${
+          current.originalname.split(".")[0]
+        }_${Date.now()}.${current.mimetype.split("/")[1]}`;
         const shortsPath = path.join(shortsFolderLocation, shortsName);
         const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-        const videoData = await uploadVideoToTencent(current.buffer)
-console.log(videoData)
-return
+        const videoData = await uploadVideoToTencent(current.buffer);
+        console.log(videoData, "videoData");
+        // return
         const short = await Shorts.create({
           name: current.originalname,
-          // fileLocation: `uploads/shorts/${shortsName}`,
-          fileLocation: videoData.MediaUrl,
+
+          fileLocation: videoData.multipleQualityUrls[0].Url,
           fileId: videoData.FileId,
           genre: "action",
           visible: true,
           genre: parsedGenre,
           language: parsedLanguage,
+          low: videoData.multipleQualityUrls[1].Url,
+          medium: videoData.multipleQualityUrls[2].Url,
+          high: videoData.multipleQualityUrls[3].Url,
         });
+        console.log(short, "short_promises");
         return short._id;
       });
       const shortsIds = await Promise.all(shortsPromises);

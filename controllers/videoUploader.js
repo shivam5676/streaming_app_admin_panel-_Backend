@@ -101,7 +101,7 @@ const uploadVideoToTencent = (video) => {
     console.log(videoData, "promise")
     const fileId = videoData.FileId; // Extract FileId
     // const templateIds = [101302, 101305, 101308];
-    transcodeTencentVideo(fileId,[101302, 101305, 101308],client)
+   return transcodeTencentVideo(fileId,[101302, 101305, 101308],client)
     return videoData
   }).catch(err => console.log(err))
 };
