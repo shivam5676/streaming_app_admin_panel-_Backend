@@ -48,6 +48,7 @@ routes.post(
   ]),
   addMovie
 );
+
 routes.post("/addSlider", upload.single("promotionalImage"), addSlider);
 routes.post("/addLayout", addLayout);
 routes.get("/allMovies", getAllMovies);

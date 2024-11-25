@@ -7,7 +7,6 @@ const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
 const uploadVideoToTencent = require("./videoUploader");
 exports.addMovie = async (req, res) => {
-  // return
   if (!req.files.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
@@ -108,6 +107,9 @@ exports.addMovie = async (req, res) => {
     }
     if (req.files.shorts && req.files.shorts.length > 0) {
       const shortsPromises = req.files.shorts.map(async (current) => {
+        if (current.originalname === "Personalised_Ad.txt") {
+          return "Ads";
+        }
         const shortsName = `${
           current.originalname.split(".")[0]
         }_${Date.now()}.${current.mimetype.split("/")[1]}`;

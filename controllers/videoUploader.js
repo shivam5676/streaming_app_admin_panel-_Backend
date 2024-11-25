@@ -56,13 +56,13 @@ function uploadVideo(videoFile) {
         SecretKey: response.TempCertificate.SecretKey,
         XCosSecurityToken: response.TempCertificate.Token, // Add this token
       });
-      console.log(videoFile, "vfilke")
+      console.log(videoFile, "vfilke");
       const uploadParams = {
         Bucket: StorageBucket,
         Region: StorageRegion,
         Key: MediaStoragePath,
         // Body: fs.createReadStream(videoFilePath), // Read video file
-        Body: videoFile
+        Body: videoFile,
       };
 
       cos.putObject(uploadParams, (uploadErr, uploadData) => {
@@ -79,33 +79,34 @@ function uploadVideo(videoFile) {
           client.CommitUpload(commitParams, (commitErr, commitResponse) => {
             if (commitErr) {
               console.error("Error committing upload:", commitErr);
-              reject(commitErr)
+              reject(commitErr);
             } else {
               console.log("Upload committed successfully:", commitResponse);
-              resolve({MediaUrl:commitResponse.MediaUrl,FileId:commitResponse.FileId})
-
-
+              resolve({
+                MediaUrl: commitResponse.MediaUrl,
+                FileId: commitResponse.FileId,
+              });
             }
           });
         }
       });
     });
-  })
-
+  });
 }
 
 // Example usage
 const uploadVideoToTencent = (video) => {
   // return uploadVideo(video)
-  return uploadVideo(video).then((videoData) => {
-    console.log(videoData, "promise")
-    const fileId = videoData.FileId; // Extract FileId
-    // const templateIds = [101302, 101305, 101308];
-   return transcodeTencentVideo(fileId,[101302, 101305, 101308],client)
-    return videoData
-  }).catch(err => console.log(err))
+  return uploadVideo(video)
+    .then((videoData) => {
+      console.log(videoData, "promise");
+      const fileId = videoData.FileId; // Extract FileId
+      // const templateIds = [101302, 101305, 101308];
+      return transcodeTencentVideo(fileId, [101308, 101305, 101302], client);//low,medium,high
+      return videoData;
+    })
+    .catch((err) => console.log(err));
 };
-
 
 // Export the function
 module.exports = uploadVideoToTencent;
