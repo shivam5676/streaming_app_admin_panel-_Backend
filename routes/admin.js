@@ -35,6 +35,7 @@ const { adminLogin } = require("../controllers/auth/adminLogin");
 const uploadVideoToTencent = require("../controllers/videoUploader");
 const {  addCheckedInSlide } = require("../controllers/addCheckedInSlide");
 const { fetchCheckedInSlide } = require("../controllers/fetchCheckedInSlide");
+const checkTaskStatus = require("../controllers/checkTaskStatus");
 
 
 const upload = multer();
@@ -87,4 +88,5 @@ routes.post("/login", adminLogin);
 routes.get("/testUpload",uploadVideoToTencent)
 routes.post("/addPointSlide",addCheckedInSlide)
 routes.get("/allCheckedInSlide",fetchCheckedInSlide)
+routes.post("/checkTranscodeTask",checkTaskStatus)
 module.exports = routes;

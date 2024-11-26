@@ -103,7 +103,7 @@ const uploadVideoToTencent = (video) => {
       const fileId = videoData.FileId; // Extract FileId
       // const templateIds = [101302, 101305, 101308];
       return transcodeTencentVideo(fileId, [101308, 101305, 101302], client);//low,medium,high
-      return videoData;
+      // return videoData;
     })
     .catch((err) => console.log(err));
 };
