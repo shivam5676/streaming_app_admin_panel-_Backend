@@ -41,10 +41,10 @@ exports.editMovie = async (req, res, next) => {
       "uploads",
       "shorts"
     );
-    const shortsFolderExists = fs.existsSync(shortsFolderLocation);
-    if (!shortsFolderExists) {
-      fs.mkdirSync(shortsFolderLocation);
-    }
+    // const shortsFolderExists = fs.existsSync(shortsFolderLocation);
+    // if (!shortsFolderExists) {
+    //   fs.mkdirSync(shortsFolderLocation);
+    // }
     if (req.files.thumbnail) {
       const getMovies = await Movies.findById(id);
       if (!getMovies) {
@@ -132,10 +132,14 @@ exports.editMovie = async (req, res, next) => {
             const short = await Shorts.create({
               name: current.originalname,
               // fileLocation: `uploads/shorts/${shortsName}`,
-              fileLocation: videoData.MediaUrl,
-              fileId: videoData.FileId,
-              genre: parsedGenre,
+              fileLocation: videoData.multipleQualityUrls[0].Url,
+              genre: "action",
               visible: true,
+              genre: parsedGenre,
+              // language: parsedLanguage,
+              low: videoData.multipleQualityUrls[1].Url,
+              medium: videoData.multipleQualityUrls[2].Url,
+              high: videoData.multipleQualityUrls[3].Url,
             });
             return short._id;
           });
@@ -203,8 +207,13 @@ exports.editMovie = async (req, res, next) => {
               // fileLocation: `uploads/shorts/${shortsName}`,
               fileLocation: videoData.MediaUrl,
               fileId: videoData.FileId,
-              genre: parsedGenre,
+              genre: "action",
               visible: true,
+              genre: parsedGenre,
+              // language: parsedLanguage,
+              low: videoData.multipleQualityUrls[1].Url,
+              medium: videoData.multipleQualityUrls[2].Url,
+              high: videoData.multipleQualityUrls[3].Url,
             });
             return short._id;
           });
