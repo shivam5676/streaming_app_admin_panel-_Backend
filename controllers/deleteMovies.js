@@ -22,7 +22,10 @@ exports.deleteMovies = async (req, res, next) => {
         if (short) {
           // Delete the video from Tencent Cloud (use your API method)
           console.log(short,"fileId")
-          await deleteVideoFromTencent(short.fileId); // Assuming `fileId` is stored in the Shorts model
+          if(short.fileId){
+            await deleteVideoFromTencent(short.fileId); // Assuming `fileId` is stored in the Shorts model
+          }
+          
 
           // Delete the short from the database
           await Shorts.findByIdAndDelete(current);

@@ -180,6 +180,7 @@ exports.editMovie = async (req, res, next) => {
               await layoutResponse.save();
             }
           });
+          
           await Promise.all(pendingPromises);
         } if (parsedGenre.length > 0) {
           const pendingPromises = parsedGenre.map(async (current) => {
