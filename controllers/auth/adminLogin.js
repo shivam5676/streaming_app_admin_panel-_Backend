@@ -1,11 +1,24 @@
 const Admin = require("../../models/Admin");
-
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 exports.adminLogin = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log("object");
-
+  const verifyToken = (token, secretKey) => {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+          reject(err); // Reject the Promise with the error
+        } else {
+          resolve(decoded); // Resolve the Promise with the decoded payload
+        }
+      });
+    });
+  };
   try {
- 
+    bcrypt.compare(data:password)
+    // const decryptedPassword = await verifyToken(password, "shivamssr");
+    // console.log(decryptedPassword);
+    // return;
     const AdminLoginResponse = await Admin.findOne({
       email: email,
       password: password,
@@ -23,6 +36,7 @@ exports.adminLogin = async (req, res, next) => {
       accessToken: "",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       msg: "something went wrong....",
       err: error,

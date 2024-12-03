@@ -36,6 +36,7 @@ const uploadVideoToTencent = require("../controllers/videoUploader");
 const {  addCheckedInSlide } = require("../controllers/addCheckedInSlide");
 const { fetchCheckedInSlide } = require("../controllers/fetchCheckedInSlide");
 const checkTaskStatus = require("../controllers/checkTaskStatus");
+const { registerAdmin } = require("../controllers/auth/registerAdmin");
 
 
 const upload = multer();
@@ -85,6 +86,7 @@ routes.get("/getContentViews/:type", fetchContentViews);
 routes.get("/fetchTopMovies/:type", fetchTopMovies);
 routes.get("/fetchLatestUsers/:type", fetchLatestUser);
 routes.post("/login", adminLogin);
+routes.post("/registerAdmin",registerAdmin)
 routes.get("/testUpload",uploadVideoToTencent)
 routes.post("/addPointSlide",addCheckedInSlide)
 routes.get("/allCheckedInSlide",fetchCheckedInSlide)
