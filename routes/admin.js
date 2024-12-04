@@ -114,7 +114,7 @@ routes.get("/getContentViews/:type", checkToken, checkAdmin, fetchContentViews);
 routes.get("/fetchTopMovies/:type", checkToken, checkAdmin, fetchTopMovies);
 
 routes.get("/fetchLatestUsers/:type", checkToken, checkAdmin, fetchLatestUser);
-routes.post("/login", checkToken, checkAdmin, adminLogin);
+routes.post("/login",  adminLogin);
 routes.post("/registerAdmin", checkToken, checkAdmin, registerAdmin);
 routes.get("/testUpload", checkToken, checkAdmin, uploadVideoToTencent);
 routes.post("/addPointSlide", checkToken, checkAdmin, addCheckedInSlide);
