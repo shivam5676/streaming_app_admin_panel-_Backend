@@ -33,16 +33,19 @@ const { fetchTopMovies } = require("../controllers/fetchTopMovies");
 const { fetchLatestUser } = require("../controllers/fetchLatestUSer");
 const { adminLogin } = require("../controllers/auth/adminLogin");
 const uploadVideoToTencent = require("../controllers/videoUploader");
-const {  addCheckedInSlide } = require("../controllers/addCheckedInSlide");
+const { addCheckedInSlide } = require("../controllers/addCheckedInSlide");
 const { fetchCheckedInSlide } = require("../controllers/fetchCheckedInSlide");
 const checkTaskStatus = require("../controllers/checkTaskStatus");
 const { registerAdmin } = require("../controllers/auth/registerAdmin");
-
+const { checkToken } = require("../controllers/auth/checkToken");
+const { checkAdmin } = require("../controllers/auth/checkAdmin");
 
 const upload = multer();
 const routes = express.Router();
 routes.post(
   "/addMovie",
+  checkToken,
+  checkAdmin,
   upload.fields([
     { name: "thumbnail" },
     { name: "shorts" },
@@ -51,44 +54,70 @@ routes.post(
   addMovie
 );
 
-routes.post("/addSlider", upload.single("promotionalImage"), addSlider);
-routes.post("/addLayout", addLayout);
-routes.get("/allMovies", getAllMovies);
-routes.delete("/deleteMovie/:id", deleteMovies);
-routes.get("/getMovie/:id", getmovie);
-// routes.get("/getLayouts",getLayout)
+routes.post(
+  "/addSlider",
+  checkToken,
+  checkAdmin,
+  upload.single("promotionalImage"),
+  addSlider
+);
+routes.post("/addLayout", checkToken, checkAdmin, addLayout);
+routes.get("/allMovies", checkToken, checkAdmin, getAllMovies);
+routes.delete("/deleteMovie/:id", checkToken, checkAdmin, deleteMovies);
+routes.get("/getMovie/:id", checkToken, checkAdmin, getmovie);
+// routes.get("/getLayouts",checkToken,checkAdmin,getLayout)
 routes.post(
   "/editMovie",
+  checkToken,
+  checkAdmin,
   upload.fields([{ name: "thumbnail" }, { name: "shorts" }]),
   editMovie
 );
-routes.get("/allLayouts", getAllLayout);
-routes.get("/getLayout/:id", getLayout);
-routes.post("/editLayout", editLayout);
-routes.delete("/deleteShort/:id", deleteShort);
+routes.get("/allLayouts", checkToken, checkAdmin, getAllLayout);
+routes.get("/getLayout/:id", checkToken, checkAdmin, getLayout);
+routes.post("/editLayout", checkToken, checkAdmin, editLayout);
+routes.delete("/deleteShort/:id", checkToken, checkAdmin, deleteShort);
 // deleteLinkedMovie
-routes.post("/deleteLinkedMovie", deleteLayoutLinkedMovies);
-routes.get("/allSliders", getAllSliders);
-routes.delete("/deleteSlider/:id", deleteSlider);
-routes.post("/addGenre", upload.single("icon"), addGenre);
-routes.get("/allGenres", getAllGenre);
-routes.delete("/deleteGenre/:id", deleteGenres);
-routes.post("/addLanguage", upload.single("icon"), addLanguage);
-routes.get("/allLanguages", getAllLLanguages);
-routes.delete("/deleteLanguage/:id", deleteLanguage);
-routes.delete("/deleteLayout/:id", deleteLayout);
-routes.get("/allUsers", getAllUsers);
-routes.post("/getUserDetails", getUserDetails);
-routes.put("/updateUserDetails", updateUserDetails);
-routes.get("/getDashboard/:type", getDashboardData);
-routes.get("/getContentViews/:type", fetchContentViews);
+routes.post(
+  "/deleteLinkedMovie",
+  checkToken,
+  checkAdmin,
+  deleteLayoutLinkedMovies
+);
+routes.get("/allSliders", checkToken, checkAdmin, getAllSliders);
+routes.delete("/deleteSlider/:id", checkToken, checkAdmin, deleteSlider);
+routes.post(
+  "/addGenre",
+  checkToken,
+  checkAdmin,
+  upload.single("icon"),
+  addGenre
+);
+routes.get("/allGenres", checkToken, checkAdmin, getAllGenre);
+routes.delete("/deleteGenre/:id", checkToken, checkAdmin, deleteGenres);
+routes.post(
+  "/addLanguage",
+  checkToken,
+  checkAdmin,
+  upload.single("icon"),
+  addLanguage
+);
+routes.get("/allLanguages", checkToken, checkAdmin, getAllLLanguages);
+routes.delete("/deleteLanguage/:id", checkToken, checkAdmin, deleteLanguage);
+routes.delete("/deleteLayout/:id", checkToken, checkAdmin, deleteLayout);
+routes.get("/allUsers", checkToken, checkAdmin, getAllUsers);
+routes.post("/getUserDetails", checkToken, checkAdmin, getUserDetails);
+routes.put("/updateUserDetails", checkToken, checkAdmin, updateUserDetails);
+routes.get("/getDashboard/:type", checkToken, checkAdmin, getDashboardData);
+routes.get("/getContentViews/:type", checkToken, checkAdmin, fetchContentViews);
 // updateUserDetails
-routes.get("/fetchTopMovies/:type", fetchTopMovies);
-routes.get("/fetchLatestUsers/:type", fetchLatestUser);
-routes.post("/login", adminLogin);
-routes.post("/registerAdmin",registerAdmin)
-routes.get("/testUpload",uploadVideoToTencent)
-routes.post("/addPointSlide",addCheckedInSlide)
-routes.get("/allCheckedInSlide",fetchCheckedInSlide)
-routes.post("/checkTranscodeTask",checkTaskStatus)
+routes.get("/fetchTopMovies/:type", checkToken, checkAdmin, fetchTopMovies);
+
+routes.get("/fetchLatestUsers/:type", checkToken, checkAdmin, fetchLatestUser);
+routes.post("/login", checkToken, checkAdmin, adminLogin);
+routes.post("/registerAdmin", checkToken, checkAdmin, registerAdmin);
+routes.get("/testUpload", checkToken, checkAdmin, uploadVideoToTencent);
+routes.post("/addPointSlide", checkToken, checkAdmin, addCheckedInSlide);
+routes.get("/allCheckedInSlide", checkToken, checkAdmin, fetchCheckedInSlide);
+routes.post("/checkTranscodeTask", checkToken, checkAdmin, checkTaskStatus);
 module.exports = routes;
