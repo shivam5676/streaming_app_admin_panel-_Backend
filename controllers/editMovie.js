@@ -6,8 +6,12 @@ const Layout = require("../models/Layout");
 const Genre = require("../models/genre");
 const uploadVideoToTencent = require("./videoUploader");
 exports.editMovie = async (req, res, next) => {
-  const { id, title, layouts, freeVideos, visible, genre } = req.body;
-  // console.log(id);
+  const { id, title, layouts, freeVideos, visible, genre, language } = req.body;
+
+  const parsedLanguage = JSON.parse(language).map((current) => {
+    return current._id;
+  });
+
   async function unlinkMovieHandler() {
     const allLayouts = await Movies.findById(id).select("layouts -_id");
 
@@ -32,8 +36,7 @@ exports.editMovie = async (req, res, next) => {
   const parsedGenre = JSON.parse(genre).map((current) => {
     return current._id;
   });
-  //  console.log(parsedGenre)
-  // return
+
   try {
     const shortsFolderLocation = path.join(
       __dirname,
@@ -41,10 +44,7 @@ exports.editMovie = async (req, res, next) => {
       "uploads",
       "shorts"
     );
-    // const shortsFolderExists = fs.existsSync(shortsFolderLocation);
-    // if (!shortsFolderExists) {
-    //   fs.mkdirSync(shortsFolderLocation);
-    // }
+
     if (req.files.thumbnail) {
       const getMovies = await Movies.findById(id);
       if (!getMovies) {
@@ -83,7 +83,6 @@ exports.editMovie = async (req, res, next) => {
         req.files.thumbnail[0].buffer
       );
 
-
       try {
         unlinkMovieHandler();
         const result = await getMovies.updateOne({
@@ -93,6 +92,7 @@ exports.editMovie = async (req, res, next) => {
           visible: visible,
           layouts: parsedLayout,
           freeVideos: freeVideos,
+          language: parsedLanguage,
         });
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
@@ -124,11 +124,12 @@ exports.editMovie = async (req, res, next) => {
         // console.log(response)
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
-            const shortsName = `${current.originalname.split(".")[0]
-              }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+            const shortsName = `${
+              current.originalname.split(".")[0]
+            }_${Date.now()}.${current.mimetype.split("/")[1]}`;
             const shortsPath = path.join(shortsFolderLocation, shortsName);
             // const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-            const videoData = await uploadVideoToTencent(current.buffer)
+            const videoData = await uploadVideoToTencent(current.buffer);
             const short = await Shorts.create({
               name: current.originalname,
               // fileLocation: `uploads/shorts/${shortsName}`,
@@ -168,6 +169,7 @@ exports.editMovie = async (req, res, next) => {
           visible: visible,
           layouts: parsedLayout,
           freeVideos: freeVideos,
+          language: parsedLanguage,
         });
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
@@ -180,9 +182,10 @@ exports.editMovie = async (req, res, next) => {
               await layoutResponse.save();
             }
           });
-          
+
           await Promise.all(pendingPromises);
-        } if (parsedGenre.length > 0) {
+        }
+        if (parsedGenre.length > 0) {
           const pendingPromises = parsedGenre.map(async (current) => {
             const genreResponse = await Genre.findOne({
               _id: current,
@@ -197,11 +200,12 @@ exports.editMovie = async (req, res, next) => {
         }
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
-            const shortsName = `${current.originalname.split(".")[0]
-              }_${Date.now()}.${current.mimetype.split("/")[1]}`;
+            const shortsName = `${
+              current.originalname.split(".")[0]
+            }_${Date.now()}.${current.mimetype.split("/")[1]}`;
             const shortsPath = path.join(shortsFolderLocation, shortsName);
             // const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-            const videoData = await uploadVideoToTencent(current.buffer)
+            const videoData = await uploadVideoToTencent(current.buffer);
 
             const short = await Shorts.create({
               name: current.originalname,
@@ -229,27 +233,6 @@ exports.editMovie = async (req, res, next) => {
         console.error("Error creating document:", err);
       }
     }
-    // if (req.files.shorts && req.files.shorts.length > 0) {
-    //   const shortsPromises = req.files.shorts.map(async (current) => {
-    //     const shortsName = `${
-    //       current.originalname.split(".")[0]
-    //     }_${Date.now()}.${current.mimetype.split("/")[1]}`;
-    //     const shortsPath = path.join(shortsFolderLocation, shortsName);
-    //     const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-    //     const short = await Shorts.create({
-    //       name: current.originalname,
-    //       fileLocation: `uploads/shorts/${shortsName}`,
-    //       genre: "action",
-    //       visible: true,
-    //     });
-    //     return short._id;
-    //   });
-
-    //   const shortsIds = await Promise.all(shortsPromises);
-    //   getMovies.shorts.push(...shortsIds);
-    //   const movieResponse = await getMovies.save();
-    //   console.log(movieResponse)
-    // }
   } catch (err) {
     console.log(err);
   }
