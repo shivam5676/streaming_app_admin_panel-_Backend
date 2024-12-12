@@ -39,6 +39,9 @@ const checkTaskStatus = require("../controllers/checkTaskStatus");
 const { registerAdmin } = require("../controllers/auth/registerAdmin");
 const { checkToken } = require("../controllers/auth/checkToken");
 const { checkAdmin } = require("../controllers/auth/checkAdmin");
+const { addAds } = require("../controllers/AddAds");
+const { deleteAds } = require("../controllers/deleteAds");
+const { disableVideo } = require("../controllers/disableVideo");
 
 const upload = multer();
 const routes = express.Router();
@@ -120,4 +123,7 @@ routes.get("/testUpload", checkToken, checkAdmin, uploadVideoToTencent);
 routes.post("/addPointSlide", checkToken, checkAdmin, addCheckedInSlide);
 routes.get("/allCheckedInSlide", checkToken, checkAdmin, fetchCheckedInSlide);
 routes.post("/checkTranscodeTask", checkToken, checkAdmin, checkTaskStatus);
+routes.post("/addAds",checkToken,checkAdmin,addAds)
+routes.delete("/deleteAds",deleteAds)
+routes.post("/disableVideo",disableVideo)
 module.exports = routes;
