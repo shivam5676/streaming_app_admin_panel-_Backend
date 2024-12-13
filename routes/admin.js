@@ -42,6 +42,9 @@ const { checkAdmin } = require("../controllers/auth/checkAdmin");
 const { addAds } = require("../controllers/AddAds");
 const { deleteAds } = require("../controllers/deleteAds");
 const { disableVideo } = require("../controllers/disableVideo");
+const { enableVideo } = require("../controllers/enableVideo");
+const ChangeSequence = require("../controllers/ChangeSequence");
+
 
 const upload = multer();
 const routes = express.Router();
@@ -124,6 +127,8 @@ routes.post("/addPointSlide", checkToken, checkAdmin, addCheckedInSlide);
 routes.get("/allCheckedInSlide", checkToken, checkAdmin, fetchCheckedInSlide);
 routes.post("/checkTranscodeTask", checkToken, checkAdmin, checkTaskStatus);
 routes.post("/addAds",checkToken,checkAdmin,addAds)
-routes.delete("/deleteAds",deleteAds)
-routes.post("/disableVideo",disableVideo)
+routes.delete("/deleteAds",checkToken,checkAdmin,deleteAds)
+routes.post("/disableVideo",checkToken,checkAdmin,disableVideo)
+routes.post("/enableVideo",checkToken,checkAdmin,enableVideo),
+routes.post("/changeSequence",checkToken,checkAdmin,ChangeSequence)
 module.exports = routes;
