@@ -44,7 +44,8 @@ const { deleteAds } = require("../controllers/deleteAds");
 const { disableVideo } = require("../controllers/disableVideo");
 const { enableVideo } = require("../controllers/enableVideo");
 const ChangeSequence = require("../controllers/ChangeSequence");
-
+const { addAdsInMovie } = require("../controllers/AddAdsInMovie");
+const { AllAds } = require("../controllers/AllAds");
 
 const upload = multer();
 const routes = express.Router();
@@ -120,15 +121,17 @@ routes.get("/getContentViews/:type", checkToken, checkAdmin, fetchContentViews);
 routes.get("/fetchTopMovies/:type", checkToken, checkAdmin, fetchTopMovies);
 
 routes.get("/fetchLatestUsers/:type", checkToken, checkAdmin, fetchLatestUser);
-routes.post("/login",  adminLogin);
+routes.post("/login", adminLogin);
 routes.post("/registerAdmin", checkToken, checkAdmin, registerAdmin);
 routes.get("/testUpload", checkToken, checkAdmin, uploadVideoToTencent);
 routes.post("/addPointSlide", checkToken, checkAdmin, addCheckedInSlide);
 routes.get("/allCheckedInSlide", checkToken, checkAdmin, fetchCheckedInSlide);
 routes.post("/checkTranscodeTask", checkToken, checkAdmin, checkTaskStatus);
-routes.post("/addAds",checkToken,checkAdmin,addAds)
-routes.delete("/deleteAds",checkToken,checkAdmin,deleteAds)
-routes.post("/disableVideo",checkToken,checkAdmin,disableVideo)
-routes.post("/enableVideo",checkToken,checkAdmin,enableVideo),
-routes.post("/changeSequence",checkToken,checkAdmin,ChangeSequence)
+routes.post("/addAdsInMovie", checkToken, checkAdmin, addAdsInMovie);
+routes.delete("/deleteAds", checkToken, checkAdmin, deleteAds);
+routes.post("/disableVideo", checkToken, checkAdmin, disableVideo);
+routes.post("/enableVideo", checkToken, checkAdmin, enableVideo),
+  routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
+routes.post("/addAds", checkToken, checkAdmin, addAds);
+routes.get("/getAds", checkToken, checkAdmin, AllAds);
 module.exports = routes;

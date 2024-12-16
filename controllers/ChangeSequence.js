@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
   //     return res.status(400).json({ msg: "no sequence  selected" });
   //   }
   const sequenceArray = req.body.sequenceData;
-  const moviesId = req.body.moviesId;
+  const moviesId = req.body.movieId;
   console.log(sequenceArray);
   //   return;
   try {
