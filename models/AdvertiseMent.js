@@ -7,6 +7,8 @@ const AdsSchema = new mongoose.Schema({
   position: String,
   sessionType: String,
   provider: String,
+},{
+  timestamps: true, // This adds createdAt and updatedAt automatically
 });
 const Ads = mongoose.model("Ads", AdsSchema);
 module.exports = Ads;
