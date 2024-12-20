@@ -42,7 +42,6 @@ exports.addMovie = async (req, res) => {
   const parsedLanguage = JSON.parse(language).map((current) => {
     return current._id;
   });
-  // return;
 
   const thumbnailPath = path.join(__dirname, "..", "uploads", "thumbnail");
 
