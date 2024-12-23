@@ -9,23 +9,44 @@ admin.initializeApp({
 // const { getMessaging } = admin;
 
 exports.sendNotification = (req, res) => {
-  admin
-    .messaging()
-    .send({
-      data: {
-        title: "New Movies Are Coming : Salaar",
-        description: "Click here to know when it is getiing released",
-        photo:""
-        //   "https://oipl.bitrix24.in/b1291759/resize_cache/367600/a7fa78f57e73ecbd0b9500a062d0d214/main/51c/51c866f6f541cffbb86a4062882d7096/avatar.png",
-      },
-      token:
-        "eu-zFijAREagtj2Rc9Ok8C:APA91bHVBMPzmKoC4FSuHYLNd7NMgvoZs1kSpcrjJ005BunvnEz6lrUi-v3JEx1fMwbSIn_JUC8BHKlExbZ5hO4JGfnQS-WXjZwocKne9plg9J00iJKKDdo",
-    })
-    .then((response) => {
-      console.log("Notification sent successfully with message ID:", response);
-      return res.json({ msg: "notification sent succeffully" });
-    })
-    .catch((error) => {
-      console.error("Error sending notification:", error.code, error.message);
-    });
+  console.log("first");
+  const { title, description } = req.body;
+  // title=title.toString()
+  console.log(req.usersDeviceList);
+  return new Promise((resolve, reject) => {
+    admin
+      .messaging()
+      .sendEachForMulticast({
+        data: {
+          title: title || "hello i am from notification testing",
+          description:
+            description ||
+            "hello i am from notification tetsting team i am testing notification",
+          photo: "",
+          //   "https://oipl.bitrix24.in/b1291759/resize_cache/367600/a7fa78f57e73ecbd0b9500a062d0d214/main/51c/51c866f6f541cffbb86a4062882d7096/avatar.png",
+        },
+        tokens: req.usersDeviceList,
+      })
+      .then((response) => {
+        const rejectedUserIDs = [];
+        console.log(
+          "Notification sent successfully with message ID:",
+          response.responses.forEach((current, index) => {
+            console.log(current.success);
+            if (current.success == false) {
+              console.log(index);
+              rejectedUserIDs.push(index);
+            }
+          })
+        );
+
+        resolve({ msg: "notification sent succeffully", rejectedUserIDs });
+        // return res.json({ msg: "notification sent successfully" });
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("Error sending notification:", error.code, error.message);
+        reject(error);
+      });
+  });
 };

@@ -47,6 +47,7 @@ const ChangeSequence = require("../controllers/ChangeSequence");
 const { addAdsInMovie } = require("../controllers/AddAdsInMovie");
 const { AllAds } = require("../controllers/AllAds");
 const { sendNotification } = require("../controllers/sendNotification");
+const { saveNotification } = require("../controllers/saveNotification");
 
 const upload = multer();
 const routes = express.Router();
@@ -135,5 +136,6 @@ routes.post("/enableVideo", checkToken, checkAdmin, enableVideo),
   routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
 routes.post("/addAds", checkToken, checkAdmin, addAds);
 routes.get("/getAds", checkToken, checkAdmin, AllAds);
+routes.post("/saveNotification",saveNotification)
 routes.get("/sendMessage",sendNotification)
 module.exports = routes;
