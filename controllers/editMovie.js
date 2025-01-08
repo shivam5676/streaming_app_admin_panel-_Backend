@@ -52,42 +52,13 @@ exports.editMovie = async (req, res, next) => {
       }
       console.log(getMovies.fileLocation);
       const thumbnailPath = path.join(__dirname, "..", getMovies.fileLocation);
-      console.log(thumbnailPath);
-      const deletedVideos = fs.unlinkSync(thumbnailPath);
 
-      const thumbnailLocation = path.join(
-        __dirname,
-        "..",
-        "uploads",
-        "thumbnail"
-      );
-
-      const pathExists = fs.existsSync(thumbnailLocation);
-
-      if (!pathExists) {
-        fs.mkdirSync(thumbnailLocation, { recursive: true });
-      }
-      console.log("here");
-      const fileName = `${title}-thumbnail_${Date.now()}`;
-
-      const mimeType = req.files.thumbnail[0].mimetype; // e.g., "image/png"
-      const fileExtension = mimeType.split("/")[1];
-
-      const filePath = path.join(
-        thumbnailLocation,
-        `${fileName}.${fileExtension}`
-      );
-
-      const uploadFile = fs.writeFileSync(
-        filePath,
-        req.files.thumbnail[0].buffer
-      );
-
+      const thumbNailName = req?.files?.thumbnail[0]?.filename;
       try {
         unlinkMovieHandler();
         const result = await getMovies.updateOne({
           name: title,
-          fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
+          fileLocation: `uploads/thumbnail/${thumbNailName}`,
           genre: parsedGenre,
           visible: visible,
           layouts: parsedLayout,
@@ -124,23 +95,27 @@ exports.editMovie = async (req, res, next) => {
         // console.log(response)
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
-            const shortsName = `${
-              current.originalname.split(".")[0]
-            }_${Date.now()}.${current.mimetype.split("/")[1]}`;
-            const shortsPath = path.join(shortsFolderLocation, shortsName);
+            const currentShortsBuffer = fs.readFileSync(current.path);
             // const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-            const videoData = await uploadVideoToTencent(current.buffer);
+            const videoData = await uploadVideoToTencent(currentShortsBuffer);
             const short = await Shorts.create({
-              name: current.originalname,
+              name: current.filename,
               // fileLocation: `uploads/shorts/${shortsName}`,
               fileLocation: videoData.multipleQualityUrls[0].Url,
-              genre: "action",
+
               visible: true,
               genre: parsedGenre,
               // language: parsedLanguage,
               low: videoData.multipleQualityUrls[1].Url,
               medium: videoData.multipleQualityUrls[2].Url,
               high: videoData.multipleQualityUrls[3].Url,
+            });
+            fs.unlink(current.path, (err) => {
+              if (err) {
+                console.error("Error deleting file:", err);
+              } else {
+                console.log("File deleted successfully");
+              }
             });
             return short._id;
           });
@@ -150,9 +125,23 @@ exports.editMovie = async (req, res, next) => {
           const movieResponse = await getMovies.save();
           console.log(movieResponse);
         }
+        fs.unlink(thumbnailPath, (err) => {
+          if (err) {
+            console.log(err);
+          }
+          console.log("previous thumbnail deleted");
+        });
 
         return res.status(200).json({ updatedMovie: result });
       } catch (err) {
+        const newThumbnailPAth = req?.files?.thumbnail[0].path;
+        fs.unlink(newThumbnailPAth, (err) => {
+          if (err) {
+            console.error("Error deleting file:", err);
+          } else {
+            console.log("File deleted successfully");
+          }
+        });
         console.error("Error creating document:", err);
       }
     } else {
@@ -200,19 +189,16 @@ exports.editMovie = async (req, res, next) => {
         }
         if (req.files.shorts && req.files.shorts.length > 0) {
           const shortsPromises = req.files.shorts.map(async (current) => {
-            const shortsName = `${
-              current.originalname.split(".")[0]
-            }_${Date.now()}.${current.mimetype.split("/")[1]}`;
-            const shortsPath = path.join(shortsFolderLocation, shortsName);
+            const currentShortsBuffer = fs.readFileSync(current.path);
             // const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-            const videoData = await uploadVideoToTencent(current.buffer);
+            const videoData = await uploadVideoToTencent(currentShortsBuffer);
 
             const short = await Shorts.create({
-              name: current.originalname,
-              // fileLocation: `uploads/shorts/${shortsName}`,
+              name: current.filename,
+
               fileLocation: videoData.MediaUrl,
               fileId: videoData.FileId,
-              genre: "action",
+
               visible: true,
               genre: parsedGenre,
               // language: parsedLanguage,
@@ -220,14 +206,23 @@ exports.editMovie = async (req, res, next) => {
               medium: videoData.multipleQualityUrls[2].Url,
               high: videoData.multipleQualityUrls[3].Url,
             });
+            fs.unlink(current.path, (err) => {
+              if (err) {
+                console.error("Error deleting file:", err);
+              } else {
+                console.log("File deleted successfully");
+              }
+            });
             return short._id;
           });
 
           const shortsIds = await Promise.all(shortsPromises);
           getMovies.shorts.push(...shortsIds);
           const movieResponse = await getMovies.save();
+
           console.log(movieResponse);
         }
+
         return res.status(200).json({ updatedMovie: result });
       } catch (err) {
         console.error("Error creating document:", err);

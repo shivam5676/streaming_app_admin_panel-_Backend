@@ -1,6 +1,12 @@
 const Users = require("../models/Users");
+const {
+  addTaskToRejectedDeviceQueue,
+} = require("../queue/TaskQueue/Notification/addTaskToRejectedDeviceQueue");
+const {
+  addTaskToSendNotificationDeviceQueue,
+} = require("../queue/TaskQueue/Notification/addTaskToSendNotificationDeviceQueue");
 const { deleteRejectedDeviceQueue } = require("../services/bullServices");
-const { deleteDeactivatedDevices } = require("./deleteDeactivatedDevices");
+// const addTaskToRejectedDeviceQueue = require("../queue/TaskQueue/Notification/addTaskToRejectedDeviceQueue");
 const { sendNotification } = require("./sendNotification");
 
 exports.saveNotification = async (req, res) => {
@@ -14,43 +20,22 @@ exports.saveNotification = async (req, res) => {
     const deviceIds = fetchUserForNotification
       .map((user) => {
         return user.Devices.map((device) => {
-          console.log(device.fcmtoken, "cu>>>>>>>>");
           return device.fcmtoken;
         });
       })
       .flat();
-    console.log(deviceIds);
-    // const userDevices = [];
-    req.usersDeviceList = deviceIds;
-    const response = await sendNotification(req, res);
 
-    // return;
-    const rejectedDeviceTokens = response.rejectedUserIDs.map(
-      (currentIndex) => {
-        return deviceIds[currentIndex];
-      }
+    req.usersDeviceList = deviceIds;
+
+    const response = await addTaskToSendNotificationDeviceQueue(
+      req.body,
+      deviceIds
     );
 
-    async function addTaskToBackgroundQueue(data) {
-      const job = await deleteRejectedDeviceQueue.add(data, { delay: 60000 });
-    }
-    addTaskToBackgroundQueue(rejectedDeviceTokens);
-
-    // deleteDeactivatedDevices(rejectedUserList);
-    return res.status(200).json({ msg: "notified successfully" });
+    return res.status(200).json({ msg: response.msg });
   } catch (err) {
     console.log(err);
   }
 };
 
-deleteRejectedDeviceQueue.on("waiting", (jobId) => {
-  console.log(`Job with ID ${jobId} is waiting to be processed.`);
-});
-deleteRejectedDeviceQueue.process(async (job) => {
-  const rejectedDeviceTokenArray = job.data;
-  console.log(rejectedDeviceTokenArray, "job is here");
-  await Users.updateMany(
-    { "Devices.fcmtoken": { $in: rejectedDeviceTokenArray } },
-    { $pull: { Devices: { fcmtoken: { $in: rejectedDeviceTokenArray } } } }
-  );
-});
+

@@ -7,6 +7,8 @@ const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
 const uploadVideoToTencent = require("./videoUploader");
 exports.addMovie = async (req, res) => {
+  const thumbNailName = req?.files?.thumbnail[0]?.filename;
+
   if (!req.files.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
@@ -24,7 +26,7 @@ exports.addMovie = async (req, res) => {
   if (!genre || !JSON.parse(genre)) {
     return res.status(400).json({ msg: "please provide genre" });
   }
-  if (!req.files?.trailerVideo && !req.files.trailerVideo) {
+  if (!req?.files?.trailerVideo && !req.body.trailerUrl) {
     return res
       .status(400)
       .json({ msg: "please provide trailerUrl or trailer video" });
@@ -43,45 +45,37 @@ exports.addMovie = async (req, res) => {
     return current._id;
   });
 
-  const thumbnailPath = path.join(__dirname, "..", "uploads", "thumbnail");
-
-  const pathExists = fs.existsSync(thumbnailPath);
-
-  if (!pathExists) {
-    fs.mkdirSync(thumbnailPath, { recursive: true });
-  }
   try {
-    const fileName = `${title}-thumbnail_${Date.now()}`;
-
-    const mimeType = req.files.thumbnail[0].mimetype; // e.g., "image/png"
-    const fileExtension = mimeType.split("/")[1];
-
-    const filePath = path.join(thumbnailPath, `${fileName}.${fileExtension}`);
-
-    const uploadFile = fs.writeFileSync(
-      filePath,
-      req.files.thumbnail[0].buffer
-    );
     let trailerUrlTencent = undefined;
     if (req.files?.trailerVideo && req.files.trailerVideo.length > 0) {
-      trailerUrlTencent = await uploadVideoToTencent(
-        req.files.trailerVideo[0].buffer
-      );
+      let trailerPath = req?.files?.trailerVideo[0]?.path || "";
+      let trailerBuffer = fs.readFileSync(trailerPath) || "";
+
+      trailerUrlTencent = await uploadVideoToTencent(trailerBuffer);
+      fs.unlink(trailerPath, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        } else {
+          console.log("File deleted successfully");
+        }
+      });
     }
+    //we neee to handle if admin uses direct upload link then it will convert the file and save it to tencent so that we could maintaing same sttings like video
+
     const movie = await Movies.create({
       name: title,
-      fileLocation: `uploads/thumbnail/${fileName}.${fileExtension}`,
+      fileLocation: `uploads/thumbnail/${thumbNailName}`,
       genre: parsedGenre,
       language: parsedLanguage,
       visible: visible,
       layouts: parsedLayout,
       freeVideos: freeVideos,
-      trailerUrl: trailerUrl || trailerUrlTencent.multipleQualityUrls[0].Url,
+      trailerUrl: trailerUrl || trailerUrlTencent?.multipleQualityUrls[0]?.Url,
       trailerUrlFileId: trailerUrlTencent?.FileId,
       parts: req.files?.shorts?.length || 0,
-      low: trailerUrlTencent.multipleQualityUrls[1].Url,
-      medium: trailerUrlTencent.multipleQualityUrls[2].Url,
-      high: trailerUrlTencent.multipleQualityUrls[3].Url,
+      low: trailerUrlTencent?.multipleQualityUrls[1]?.Url,
+      medium: trailerUrlTencent?.multipleQualityUrls[2]?.Url,
+      high: trailerUrlTencent?.multipleQualityUrls[3]?.Url,
     });
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
@@ -109,20 +103,16 @@ exports.addMovie = async (req, res) => {
         if (current.originalname === "Personalised_Ad.txt") {
           return "Ads";
         }
-        const shortsName = `${
-          current.originalname.split(".")[0]
-        }_${Date.now()}.${current.mimetype.split("/")[1]}`;
-        const shortsPath = path.join(shortsFolderLocation, shortsName);
-        const uploadShorts = fs.writeFileSync(shortsPath, current.buffer);
-        const videoData = await uploadVideoToTencent(current.buffer);
-        console.log(videoData, "videoData");
-        // return
-        const short = await Shorts.create({
-          name: current.originalname,
+        const currentShortsBuffer = fs.readFileSync(current.path);
 
+        const videoData = await uploadVideoToTencent(currentShortsBuffer);
+
+        const short = await Shorts.create({
+          name: current.filename,
+          movieName: title,
           fileLocation: videoData.multipleQualityUrls[0].Url,
           fileId: videoData.FileId,
-          genre: "action",
+          // genre: "action",
           visible: true,
           genre: parsedGenre,
           language: parsedLanguage,
@@ -130,7 +120,15 @@ exports.addMovie = async (req, res) => {
           medium: videoData.multipleQualityUrls[2].Url,
           high: videoData.multipleQualityUrls[3].Url,
         });
-        console.log(short, "short_promises");
+
+        fs.unlink(current.path, (err) => {
+          if (err) {
+            console.error("Error deleting file:", err);
+          } else {
+            console.log("File deleted successfully");
+          }
+        });
+
         return short._id;
       });
       const shortsIds = await Promise.all(shortsPromises);
@@ -143,6 +141,14 @@ exports.addMovie = async (req, res) => {
       .json({ msg: "file saved successfully", movieData: movie });
   } catch (err) {
     console.log(err);
+    const newThumbnailPAth = req?.files?.thumbnail[0].path;
+    fs.unlink(newThumbnailPAth, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully");
+      }
+    });
     return res.status(400).json({ msg: "something went wrong", err: err });
   }
 };

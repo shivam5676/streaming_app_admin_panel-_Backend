@@ -48,18 +48,71 @@ const { addAdsInMovie } = require("../controllers/AddAdsInMovie");
 const { AllAds } = require("../controllers/AllAds");
 const { sendNotification } = require("../controllers/sendNotification");
 const { saveNotification } = require("../controllers/saveNotification");
+const { movieFileHandler } = require("../controllers/MovieFileHAndler");
+const fs = require("fs");
+const path = require("path");
 
-const upload = multer();
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Define base upload directory
+    const baseUploadDir = path.join(__dirname, "..", "uploads");
+    let uploadDir;
+
+    // Customize subdirectories based on fieldname
+    switch (file.fieldname) {
+      case "thumbnail":
+        uploadDir = path.join(baseUploadDir, "thumbnail");
+        break;
+      case "shorts":
+        uploadDir = path.join(baseUploadDir, "shorts");
+        break;
+      case "trailerVideo":
+        uploadDir = path.join(baseUploadDir, "trailerVideo");
+        break;
+      default:
+        uploadDir = baseUploadDir; // Fallback to base directory
+    }
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    cb(null, uploadDir); // Set upload directory
+  },
+
+  filename: (req, file, cb) => {
+    // Define unique file name
+
+    const fileExtension = path.extname(file.originalname);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const uniqueFileName =
+      file.originalname.split(".").slice(0, -1).join(".") +
+      "-" +
+      uniqueSuffix +
+      fileExtension;
+    cb(
+      null,
+      uniqueFileName
+    );
+    file.modifiedName=uniqueFileName
+  },
+});
+
+// Use disk storage and accept multiple file types for specific fields
+const uploadMovieData = multer({ storage: storage });
+const upload=multer()
 const routes = express.Router();
 routes.post(
   "/addMovie",
   checkToken,
   checkAdmin,
-  upload.fields([
+  uploadMovieData.fields([
     { name: "thumbnail" },
     { name: "shorts" },
     { name: "trailerVideo" },
   ]),
+  // movieFileHandler,
   addMovie
 );
 
@@ -79,7 +132,7 @@ routes.post(
   "/editMovie",
   checkToken,
   checkAdmin,
-  upload.fields([{ name: "thumbnail" }, { name: "shorts" }]),
+  uploadMovieData.fields([{ name: "thumbnail" }, { name: "shorts" }]),
   editMovie
 );
 routes.get("/allLayouts", checkToken, checkAdmin, getAllLayout);
@@ -136,6 +189,6 @@ routes.post("/enableVideo", checkToken, checkAdmin, enableVideo),
   routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
 routes.post("/addAds", checkToken, checkAdmin, addAds);
 routes.get("/getAds", checkToken, checkAdmin, AllAds);
-routes.post("/saveNotification",saveNotification)
-routes.get("/sendMessage",sendNotification)
+routes.post("/saveNotification", saveNotification);
+routes.get("/sendMessage", sendNotification);
 module.exports = routes;
