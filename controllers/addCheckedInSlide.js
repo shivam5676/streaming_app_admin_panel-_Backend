@@ -52,7 +52,6 @@ exports.addCheckedInSlide = async (req, res) => {
       .json({ msg: "On every column can only contains number" });
   }
   if (pointAllocationType == "Step" && Number(dayPattern) <= 0) {
-    console.log("activated");
     return res
       .status(404)
       .json({ msg: "On every column can not be 0 and negative..." });
@@ -60,10 +59,10 @@ exports.addCheckedInSlide = async (req, res) => {
   try {
     let nextIncrementStart = +start + +dayPattern;
     let pointsAllocating = +allocatedPoints;
-    for (let day = +start; day <= +start + +end; day++) {
+    for (let day = +start; day < +start + +end; day++) {
       if (day == nextIncrementStart) {
         nextIncrementStart = nextIncrementStart + +dayPattern;
-        pointsAllocating += +allocatedPoints;
+        pointsAllocating += +increaseBy;
       }
       const response = await checkInpoints.create({
         Day: day,
@@ -71,6 +70,7 @@ exports.addCheckedInSlide = async (req, res) => {
         allocatedPoints: pointsAllocating,
       });
     }
+    return res.status(200).json({ msg: "checked-In slides Added" });
   } catch (error) {
     console.log(error);
   }

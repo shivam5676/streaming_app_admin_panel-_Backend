@@ -12,8 +12,9 @@ admin.initializeApp({
 // const { getMessaging } = admin;
 
 exports.sendNotification = (data, usersDeviceList) => {
-  const { title, description } = data;
-
+ 
+  
+ 
   try {
     admin
       .messaging()
@@ -22,7 +23,7 @@ exports.sendNotification = (data, usersDeviceList) => {
           title: title || "hello i am from notification testing",
           description:
             description ||
-            "hello i am from notification tetsting team i am testing notification",
+            "hello i am from notification testing team i am testing notification",
           photo: "",
           //   "https://oipl.bitrix24.in/b1291759/resize_cache/367600/a7fa78f57e73ecbd0b9500a062d0d214/main/51c/51c866f6f541cffbb86a4062882d7096/avatar.png",
         },
@@ -45,7 +46,7 @@ exports.sendNotification = (data, usersDeviceList) => {
         );
         addTaskToRejectedDeviceQueue(rejectedDeviceTokens);
         console.log({
-          msg: "notification sent succeffully",
+          msg: "notification sent successfully",
         });
       })
       .catch((error) => {
