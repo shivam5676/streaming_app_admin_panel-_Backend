@@ -5,7 +5,7 @@ exports.DeleteNotificationDeviceProcessor = async () => {
   try {
     deleteRejectedDeviceQueue.process(async (job) => {
       try {
-        console.log("after some time it started finally")
+        console.log("after some time it started finally");
         const rejectedDeviceTokenArray = job.data;
 
         const response = await Users.updateMany(

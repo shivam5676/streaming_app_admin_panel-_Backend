@@ -1,6 +1,6 @@
 var admin = require("firebase-admin");
 
-var serviceAccount = require("../reeloid-fcn-firebase-adminsdk-p7rd5-43d4fb93e4.json");
+var serviceAccount = require("../reeloid-47c30-firebase-adminsdk-4nweu-d2b75bd806.json");
 const {
   addTaskToRejectedDeviceQueue,
 } = require("../queue/TaskQueue/Notification/addTaskToRejectedDeviceQueue");
@@ -12,9 +12,9 @@ admin.initializeApp({
 // const { getMessaging } = admin;
 
 exports.sendNotification = (data, usersDeviceList) => {
- 
-  
- 
+  console.log(data, usersDeviceList);
+  const { title, description } = data;
+
   try {
     admin
       .messaging()
@@ -32,9 +32,8 @@ exports.sendNotification = (data, usersDeviceList) => {
       .then((response) => {
         const rejectedUserIDsIndex = [];
         response.responses.forEach((current, index) => {
-          console.log(current.success);
           if (current.success == false) {
-            console.log(index);
+            
             rejectedUserIDsIndex.push(index);
           }
         });
@@ -44,7 +43,7 @@ exports.sendNotification = (data, usersDeviceList) => {
             return usersDeviceList[currentIndex];
           }
         );
-        addTaskToRejectedDeviceQueue(rejectedDeviceTokens);
+        // addTaskToRejectedDeviceQueue(rejectedDeviceTokens);
         console.log({
           msg: "notification sent successfully",
         });

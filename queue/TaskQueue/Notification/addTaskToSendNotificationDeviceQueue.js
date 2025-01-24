@@ -4,11 +4,20 @@ const {
 
 exports.addTaskToSendNotificationDeviceQueue = async (
   dataToSend,
-  deviceIds
+  deviceIds,
+  scheduleData
 ) => {
   try {
     console.log(dataToSend.deviceIds);
-    const delay = 5000; //ms
+    let delay = 0;
+    if (scheduleData.startTime <= scheduleData.currentTime) {
+      delay = 0;
+    } else {
+      delay = Math.abs(scheduleData.startTime - scheduleData.currentTime);
+    }
+
+ 
+    console.log(delay,"delay registered")
     const job = await sendNotificationtoDeviceQueue.add(
       { dataToSend, deviceIds },
       { delay: delay }
@@ -17,6 +26,7 @@ exports.addTaskToSendNotificationDeviceQueue = async (
       msg: "job added successfully ....notification will sent on selected time",
     };
   } catch (error) {
+    console.log("errro",error)
     throw new Error(error);
   }
 };
