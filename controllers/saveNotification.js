@@ -103,5 +103,5 @@ exports.saveNotification = async (req, res) => {
     return res.status(200).json({ msg: response.msg });
   } catch (err) {
     return res.status(400).json({ msg: "something went wrong ....", err: err });
-  }
+  }git log
 };
