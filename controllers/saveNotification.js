@@ -79,29 +79,40 @@ exports.saveNotification = async (req, res) => {
       title: title,
       startTimeUnix: startTimeAndDateString,
       endTimeUnix: endTimeAndDateString,
+      description: description,
+      target:
+        "location/user/or anything else we will run a query for targeting device by target ,we need to remove visible an dadd target audience (location,user or any thing else also we can a select option for location ip /city ,same for user if need  in frontend) also we can add notification Visibilty option(hourly,daily once ,daily morning ,evening,afternoon monthly)",
+      status: "Pending",
+      repeat:"Minute",
+      lastSuccessMessage: "Added",
+      lastErrorMessage: "no error",
+      lastTaskLaunch: "latest completed task date or we will use -",
+      nextTaskLaunch:
+        "upcoming  task date or we will use no upcoming task message after calculating starting ending date",
     });
+
+    if (!notificationTask) {
+      throw new Error("could not cretaed the task in database");
+    }
+    let delay = 0;
+    if (startTimeAndDateString <= roundedCurrentTimeAndDateString) {
+      delay = 0;
+    } else {
+      delay = Math.abs(startTimeAndDateString - roundedCurrentTimeAndDateString);
+    }
     const response = await addTaskToSendNotificationDeviceQueue(
-      req.body,
+      notificationTask._id,
       deviceIds,
-      {
-        startTime: startTimeAndDateString,
-        endTime: endTimeAndDateString,
-        currentTime: roundedCurrentTimeAndDateString,
-
-        description: description,
-        target:
-          "location/user/or anything else we will run a query for targeting device by target ,we need to remove visible an dadd target audience (location,user or any thing else also we can a select option for location ip /city ,same for user if need  in frontend) also we can add notification Visibilty option(hourly,daily once ,daily morning ,evening,afternoon monthly)",
-        status: Pending,
-        lastSuccessMessage: "Added",
-        lastErrorMessage: "no error",
-        lastTaskLaunch: "latest completed task date or we will use -",
-        nextTaskLaunch:
-          "upcoming  task date or we will use no upcoming task message after calculating starting ending date",
-      }
+      delay
+      // {
+      //   startTime: startTimeAndDateString,
+      //   endTime: endTimeAndDateString,
+      //   currentTime: roundedCurrentTimeAndDateString,
+      // }
     );
-
     return res.status(200).json({ msg: response.msg });
   } catch (err) {
+    console.log(err);
     return res.status(400).json({ msg: "something went wrong ....", err: err });
-  }git log
+  }
 };

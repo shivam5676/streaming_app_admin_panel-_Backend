@@ -6,6 +6,7 @@ const {
 exports.SendNotificationToDeviceProcessor = () => {
   sendNotificationtoDeviceQueue.process((job) => {
     //job will process here 
-    sendNotification(job.data.dataToSend, job.data.deviceIds);
+    console.log(job)
+    sendNotification(job.data.dbTaskId, job.data.deviceIds);
   });
 };
