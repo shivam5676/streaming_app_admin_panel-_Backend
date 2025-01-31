@@ -51,6 +51,8 @@ const { saveNotification } = require("../controllers/saveNotification");
 const { movieFileHandler } = require("../controllers/MovieFileHAndler");
 const fs = require("fs");
 const path = require("path");
+const { getAllNotification } = require("../controllers/getAllNotificationTask");
+const { terminateJob } = require("../controllers/TerminateJob");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -91,17 +93,14 @@ const storage = multer.diskStorage({
       "-" +
       uniqueSuffix +
       fileExtension;
-    cb(
-      null,
-      uniqueFileName
-    );
-    file.modifiedName=uniqueFileName
+    cb(null, uniqueFileName);
+    file.modifiedName = uniqueFileName;
   },
 });
 
 // Use disk storage and accept multiple file types for specific fields
 const uploadMovieData = multer({ storage: storage });
-const upload=multer()
+const upload = multer();
 const routes = express.Router();
 routes.post(
   "/addMovie",
@@ -186,9 +185,12 @@ routes.post("/addAdsInMovie", checkToken, checkAdmin, addAdsInMovie);
 routes.delete("/deleteAds", checkToken, checkAdmin, deleteAds);
 routes.post("/disableVideo", checkToken, checkAdmin, disableVideo);
 routes.post("/enableVideo", checkToken, checkAdmin, enableVideo),
-  routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
+routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
 routes.post("/addAds", checkToken, checkAdmin, addAds);
 routes.get("/getAds", checkToken, checkAdmin, AllAds);
 routes.post("/saveNotification", saveNotification);
 routes.get("/sendMessage", sendNotification);
+
+routes.get("/getAllNotifications", getAllNotification);
+routes.get("/terminateJob", terminateJob);
 module.exports = routes;
