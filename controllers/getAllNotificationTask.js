@@ -7,5 +7,6 @@ exports.getAllNotification = async (req, res, next) => {
     console.log(response);
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ msg: "something went wrong", err: error });
   }
 };

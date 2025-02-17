@@ -53,6 +53,7 @@ const fs = require("fs");
 const path = require("path");
 const { getAllNotification } = require("../controllers/getAllNotificationTask");
 const { terminateJob } = require("../controllers/TerminateJob");
+const { AddMintsPlan } = require("../controllers/AddMintsPlan");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -185,12 +186,13 @@ routes.post("/addAdsInMovie", checkToken, checkAdmin, addAdsInMovie);
 routes.delete("/deleteAds", checkToken, checkAdmin, deleteAds);
 routes.post("/disableVideo", checkToken, checkAdmin, disableVideo);
 routes.post("/enableVideo", checkToken, checkAdmin, enableVideo),
-routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
+  routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
 routes.post("/addAds", checkToken, checkAdmin, addAds);
 routes.get("/getAds", checkToken, checkAdmin, AllAds);
 routes.post("/saveNotification", saveNotification);
 routes.get("/sendMessage", sendNotification);
 
 routes.get("/getAllNotifications", getAllNotification);
+routes.post("/addSubscriptionPlan", AddMintsPlan);
 routes.get("/terminateJob", terminateJob);
 module.exports = routes;

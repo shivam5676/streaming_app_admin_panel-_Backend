@@ -127,6 +127,6 @@ exports.getDashboardData = async (req, res, next) => {
       sliders:SliderResult
     });
   } catch (err) {
-    res.status(500).json({ message: "Server Error", error: err.message });
+    return res.status(500).json({ message: "Server Error", error: err.message });
   }
 };

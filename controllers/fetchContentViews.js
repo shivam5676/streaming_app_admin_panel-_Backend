@@ -48,6 +48,6 @@ exports.fetchContentViews = async (req, res, next) => {
     };
     res.status(200).json({ movies: moviesResult });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+   return res.status(500).json({ message: "Server error", error });
   }
 };

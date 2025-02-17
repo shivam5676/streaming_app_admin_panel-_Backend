@@ -3,7 +3,7 @@ const Users = require("../models/Users");
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const allMovies = await Users.find().select("name email")
+    const allMovies = await Users.find().select("name email");
     // .populate([
     //   {
     //     path: "layouts",
@@ -16,8 +16,8 @@ exports.getAllUsers = async (req, res, next) => {
     // ]);
     // console.log(allMovies[0].layouts)
     return res.status(200).json({ allMovies });
-    
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ msg: "something went wrong", err: error });
   }
 };

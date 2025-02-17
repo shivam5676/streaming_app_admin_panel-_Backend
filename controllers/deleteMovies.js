@@ -37,6 +37,6 @@ exports.deleteMovies = async (req, res, next) => {
     return res.status(200).json({ msg: "deleted Successfully" });
   } catch (err) {
     return res.status(400).json({ msg: err });
-    ``;
+   
   }
 };

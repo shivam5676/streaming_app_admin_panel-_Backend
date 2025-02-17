@@ -51,5 +51,6 @@ exports.addLayout = async (req, res, next) => {
     return res.status(200).json({ layoutResponse });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ msg: "something went wrong", err: err });
   }
 };

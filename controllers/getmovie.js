@@ -26,6 +26,8 @@ exports.getmovie = async (req, res, next) => {
     return res.status(200).json({ movieData: response});
     // console.log(response);
   } catch (err) {
-    console.log(err);
+    console.log(err); return res
+    .status(500)
+    .json({ msg: "something went wrong",err:err });
   }
 };

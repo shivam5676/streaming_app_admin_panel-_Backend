@@ -230,5 +230,8 @@ exports.editMovie = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
+    return res
+    .status(500)
+    .json({ msg: "something went wrong",err:error });
   }
 };

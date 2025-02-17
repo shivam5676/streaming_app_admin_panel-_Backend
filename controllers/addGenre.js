@@ -27,5 +27,9 @@ exports.addGenre = async (req, res, next) => {
         .json({ msg: "err while saving the genre.plz try again..." });
     }
     return res.status(200).json({ genre: saveGenre });
-  } catch (error) {}
+  } catch (error) {
+    return res
+        .status(500)
+        .json({ msg: "something went wrong",err:error });
+  }
 };

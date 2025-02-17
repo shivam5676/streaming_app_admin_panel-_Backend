@@ -160,6 +160,8 @@ exports.sendNotification = async (dbTaskId, usersDeviceList) => {
         console.log("Error sending notification:", error.code, error.message);
       });
   } catch (error) {
-    console.log(error);
+    console.log(error); return res
+    .status(500)
+    .json({ msg: "something went wrong",err:error });
   }
 };
