@@ -146,7 +146,7 @@ routes.post(
   checkAdmin,
   deleteLayoutLinkedMovies
 );
-routes.get("/allSliders", checkToken, checkAdmin, getAllSliders);
+routes.get("/allSliders/:start/:limit", checkToken, checkAdmin, getAllSliders);
 routes.delete("/deleteSlider/:id", checkToken, checkAdmin, deleteSlider);
 routes.post(
   "/addGenre",
