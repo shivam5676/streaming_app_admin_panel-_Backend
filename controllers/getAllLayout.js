@@ -6,27 +6,32 @@ exports.getAllLayout = async (req, res) => {
   console.log(start, limit, searched);
 
   let filter = {};
-  if (searched && searched.trim() !== "") {
-    filter = {
-      $or: [
-        { name: { $regex: searched, $options: "i" } },
-        { Description: { $regex: searched, $options: "i" } },
-      ],
-    };
-  }
-  const totalLayouts = await Layout.countDocuments(filter);
-  const response = await Layout.find(filter).select("name _id visible").skip(limit * start)
-  .limit(limit);
-  if (!response) {
-    return res.status(200).json({ Layout: [] });
-  }
-  return res
-    .status(200)
-    .json({
+  try {
+    if (searched && searched.trim() !== "") {
+      filter = {
+        $or: [
+          { name: { $regex: searched, $options: "i" } },
+          { Description: { $regex: searched, $options: "i" } },
+        ],
+      };
+    }
+    const totalLayouts = await Layout.countDocuments(filter);
+    const response = await Layout.find(filter)
+      .select("name _id visible")
+      .skip(limit * start)
+      .limit(limit);
+    if (!response) {
+      return res.status(200).json({ Layout: [] });
+    }
+    return res.status(200).json({
       Layout: response,
       start,
       limit,
       totalData: totalLayouts,
       totalPages: Math.ceil(totalLayouts / limit),
     });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ err: error });
+  }
 };
