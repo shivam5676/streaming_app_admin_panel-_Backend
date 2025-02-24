@@ -2,8 +2,8 @@ const Slider = require("../models/Slider");
 
 exports.getAllSliders = async (req, res) => {
   const { start, limit, searched } = req.query;
-  console.log(start, limit,searched);
-  
+  // console.log(start, limit,searched);
+
   let filter = {};
   try {
     if (searched && searched.trim() !== "") {
@@ -33,6 +33,6 @@ exports.getAllSliders = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(400).json({ err: error });
+    return res.status(400).json({ msg: "something went wrong", err: error });
   }
 };
