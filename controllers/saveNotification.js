@@ -1,15 +1,10 @@
 const NotificationTasks = require("../models/NotificationTask");
-const NotificationTasks = require("../models/NotificationTask");
+
 const Users = require("../models/Users");
-const {
-  addTaskToRejectedDeviceQueue,
-} = require("../queue/TaskQueue/Notification/addTaskToRejectedDeviceQueue");
+
 const {
   addTaskToSendNotificationDeviceQueue,
 } = require("../queue/TaskQueue/Notification/addTaskToSendNotificationDeviceQueue");
-const { deleteRejectedDeviceQueue } = require("../services/bullServices");
-// const addTaskToRejectedDeviceQueue = require("../queue/TaskQueue/Notification/addTaskToRejectedDeviceQueue");
-const { sendNotification } = require("./sendNotification");
 
 exports.saveNotification = async (req, res) => {
   const { title, description, startDate, startTime, endDate, endTime } =
@@ -40,26 +35,8 @@ exports.saveNotification = async (req, res) => {
     return new Date(datTimeString).getTime();
     // console.log(new Date(datTimeString).getTime()); //changing data and time to unix value so that i could pass it to notification launcher also i will do for end date and time and pass it as end datae so that any user or location will get these notoification till end date end tim e,from start dat eand start time
   }
-  const startTimeAndDateString = unixTimeConversion(startDate, startTime);
-  const endTimeAndDateString = unixTimeConversion(endDate, endTime);
-  const currentTimeAndDateString = Math.floor(new Date().getTime() / 1000);
-  const roundedCurrentTimeAndDateString =
-    Math.floor(currentTimeAndDateString / 60) * 60 * 1000; //rounding to minutes not taking millisecond
-  const gracePeriod = 120000;
-  console.log(
-    startTimeAndDateString,
-    endTimeAndDateString,
-
-    roundedCurrentTimeAndDateString
-  );
-  if (startTimeAndDateString < roundedCurrentTimeAndDateString - gracePeriod) {
-    return res
-      .status(400)
-      .json({ msg: "start time can not less than current time" });
-  }
 
   // return;
-
 
   //changing data and time to unix value so that i could pass it to notification launcher also i will do for end date and time and pass it as end datae so that any user or location will get these notoification till end date end tim e,from start dat eand start time
   function unixTimeConversion(date, time) {
@@ -111,7 +88,7 @@ exports.saveNotification = async (req, res) => {
       target:
         "location/user/or anything else we will run a query for targeting device by target ,we need to remove visible an dadd target audience (location,user or any thing else also we can a select option for location ip /city ,same for user if need  in frontend) also we can add notification Visibilty option(hourly,daily once ,daily morning ,evening,afternoon monthly)",
       status: "Pending",
-      repeat:"Minute",
+      repeat: "Minute",
       lastSuccessMessage: "Added",
       lastErrorMessage: "no error",
       lastTaskLaunch: "latest completed task date or we will use -",
@@ -126,17 +103,15 @@ exports.saveNotification = async (req, res) => {
     if (startTimeAndDateString <= roundedCurrentTimeAndDateString) {
       delay = 0;
     } else {
-      delay = Math.abs(startTimeAndDateString - roundedCurrentTimeAndDateString);
+      delay = Math.abs(
+        startTimeAndDateString - roundedCurrentTimeAndDateString
+      );
     }
+    console.log(deviceIds)
     const response = await addTaskToSendNotificationDeviceQueue(
       notificationTask._id,
       deviceIds,
       delay
-      // {
-      //   startTime: startTimeAndDateString,
-      //   endTime: endTimeAndDateString,
-      //   currentTime: roundedCurrentTimeAndDateString,
-      // }
     );
     return res.status(200).json({ msg: response.msg });
   } catch (err) {

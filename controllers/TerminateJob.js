@@ -20,6 +20,7 @@ exports.terminateJob = async (req, res) => {
     }
 
     await jobTask.remove();
+    await notificationTask.save({ status: "Terminated" });
     return res.status(200).json({ msg: "Task Terminated successfully" });
   } catch (error) {
     return res.status(200).json({ msg: "Something went wrong", err: error });

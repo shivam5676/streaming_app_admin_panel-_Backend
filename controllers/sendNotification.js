@@ -40,9 +40,18 @@ exports.sendNotification = async (dbTaskId, usersDeviceList) => {
           photo: "",
           //   "https://oipl.bitrix24.in/b1291759/resize_cache/367600/a7fa78f57e73ecbd0b9500a062d0d214/main/51c/51c866f6f541cffbb86a4062882d7096/avatar.png",
         },
+        // notification: {
+        //   title: fetchTask.title || "hello i am from notification testing",
+        //   body:
+        //     fetchTask.description ||
+        //     "hello i am from notification testing team i am testing notification",
+        //   photo: "",
+        //   //   "https://oipl.bitrix24.in/b1291759/resize_cache/367600/a7fa78f57e73ecbd0b9500a062d0d214/main/51c/51c866f6f541cffbb86a4062882d7096/avatar.png",
+        // },
         tokens: usersDeviceList,
       })
       .then(async (response) => {
+        console.log(response,"reffefuhufyhusyhf")
         const rejectedUserIDsIndex = [];
         response.responses.forEach((current, index) => {
           if (current.success == false) {
@@ -160,8 +169,7 @@ exports.sendNotification = async (dbTaskId, usersDeviceList) => {
         console.log("Error sending notification:", error.code, error.message);
       });
   } catch (error) {
-    console.log(error); return res
-    .status(500)
-    .json({ msg: "something went wrong",err:error });
+    console.log(error);
+    return res.status(500).json({ msg: "something went wrong", err: error });
   }
 };
