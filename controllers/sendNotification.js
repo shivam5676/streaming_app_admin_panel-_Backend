@@ -1,14 +1,11 @@
 var admin = require("firebase-admin");
 
 var serviceAccount = require("../reeloid-47c30-firebase-adminsdk-4nweu-d2b75bd806.json");
-const {
-  addTaskToRejectedDeviceQueue,
-} = require("../queue/TaskQueue/Notification/addTaskToRejectedDeviceQueue");
+
 const NotificationTasks = require("../models/NotificationTask");
 const {
   addTaskToSendNotificationDeviceQueue,
 } = require("../queue/TaskQueue/Notification/addTaskToSendNotificationDeviceQueue");
-const { sendNotificationtoDeviceQueue } = require("../services/bullServices");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -51,7 +48,7 @@ exports.sendNotification = async (dbTaskId, usersDeviceList) => {
         tokens: usersDeviceList,
       })
       .then(async (response) => {
-        console.log(response,"reffefuhufyhusyhf")
+        console.log(response, "reffefuhufyhusyhf");
         const rejectedUserIDsIndex = [];
         response.responses.forEach((current, index) => {
           if (current.success == false) {

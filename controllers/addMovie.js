@@ -6,35 +6,35 @@ const { time } = require("console");
 const Movies = require("../models/Movies");
 const Layout = require("../models/Layout");
 const uploadVideoToTencent = require("./videoUploader");
+const {
+  addTaskToMovieUploadQueue,
+} = require("../queue/TaskQueue/Movies/addTAskToMovieUploadQueue");
 exports.addMovie = async (req, res) => {
-  const thumbNailName = req?.files?.thumbnail[0]?.filename;
-
-  if (!req.files.thumbnail) {
-    return res.status(400).json({ msg: "please upload thumbnail" });
-  }
   const { title, layouts, freeVideos, visible, genre, trailerUrl, language } =
     req.body;
+  if (!req?.files?.thumbnail) {
+    return res.status(400).json({ msg: "please upload thumbnail" });
+  }
 
-  // console.log(JSON.parse(language));
-  // return;
   if (!title) {
     return res.status(400).json({ msg: "please provide title" });
   }
-  if (!layouts || !JSON.parse(layouts)) {
+  if (layouts.length == 0 || !JSON.parse(layouts)) {
     return res.status(400).json({ msg: "please select layout" });
   }
-  if (!genre || !JSON.parse(genre)) {
+  if (genre.length == 0 || !JSON.parse(genre)) {
     return res.status(400).json({ msg: "please provide genre" });
+  }
+  if (language.length == 0 || !JSON.parse(language)) {
+    return res.status(400).json({ msg: "please provide content language" });
   }
   if (!req?.files?.trailerVideo && !req.body.trailerUrl) {
     return res
       .status(400)
       .json({ msg: "please provide trailerUrl or trailer video" });
   }
-  if (!language || !JSON.parse(language)) {
-    return res.status(400).json({ msg: "please provide content language" });
-  }
 
+  const thumbNailName = req?.files?.thumbnail[0]?.filename;
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
@@ -98,43 +98,62 @@ exports.addMovie = async (req, res) => {
     if (!shortsFolderExists) {
       fs.mkdirSync(shortsFolderLocation);
     }
-    if (req.files.shorts && req.files.shorts.length > 0) {
-      const shortsPromises = req.files.shorts.map(async (current) => {
-        if (current.originalname === "Personalised_Ad.txt") {
-          return "Ads";
-        }
-        const currentShortsBuffer = fs.readFileSync(current.path);
-
-        const videoData = await uploadVideoToTencent(currentShortsBuffer);
-
-        const short = await Shorts.create({
-          name: current.filename,
-          movieName: title,
-          fileLocation: videoData.multipleQualityUrls[0].Url,
-          fileId: videoData.FileId,
-          // genre: "action",
-          visible: true,
-          genre: parsedGenre,
-          language: parsedLanguage,
-          low: videoData.multipleQualityUrls[1].Url,
-          medium: videoData.multipleQualityUrls[2].Url,
-          high: videoData.multipleQualityUrls[3].Url,
+    if (req?.files?.shorts?.length > 0) {
+      req.files.shorts.forEach((short) => {
+        addTaskToMovieUploadQueue({
+          short, // Pass one short at a time
+          parsedLanguage,
+          parsedGenre,
+          title,
+          movieId: movie._id, // Pass only ID to avoid serialization issues
         });
-
-        fs.unlink(current.path, (err) => {
-          if (err) {
-            console.error("Error deleting file:", err);
-          } else {
-            console.log("File deleted successfully");
-          }
-        });
-
-        return short._id;
       });
-      const shortsIds = await Promise.all(shortsPromises);
-      movie.shorts.push(...shortsIds);
-      await movie.save();
     }
+    // addTaskToMovieUploadQueue({
+    //   shorts: req.files.shorts,
+    //   parsedLanguage,
+    //   parsedGenre,
+    //   title,
+    //   movie
+    // });
+
+    // if (req.files.shorts && req.files.shorts.length > 0) {
+    //   const shortsPromises = req.files.shorts.map(async (current) => {
+    //     if (current.originalname === "Personalised_Ad.txt") {
+    //       return "Ads";
+    //     }
+    //     const currentShortsBuffer = fs.readFileSync(current.path);
+
+    //     const videoData = await uploadVideoToTencent(currentShortsBuffer);
+
+    //     const short = await Shorts.create({
+    //       name: current.filename,
+    //       movieName: title,
+    //       fileLocation: videoData.multipleQualityUrls[0].Url,
+    //       fileId: videoData.FileId,
+    //       // genre: "action",
+    //       visible: true,
+    //       genre: parsedGenre,
+    //       language: parsedLanguage,
+    //       low: videoData.multipleQualityUrls[1].Url,
+    //       medium: videoData.multipleQualityUrls[2].Url,
+    //       high: videoData.multipleQualityUrls[3].Url,
+    //     });
+
+    //     fs.unlink(current.path, (err) => {
+    //       if (err) {
+    //         console.error("Error deleting file:", err);
+    //       } else {
+    //         console.log("File deleted successfully");
+    //       }
+    //     });
+
+    //     return short._id;
+    //   });
+    //   const shortsIds = await Promise.all(shortsPromises);
+    //   movie.shorts.push(...shortsIds);
+    //   await movie.save();
+    // }
 
     return res
       .status(200)
