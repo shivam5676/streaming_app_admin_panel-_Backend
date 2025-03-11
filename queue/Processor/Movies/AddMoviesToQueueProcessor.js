@@ -8,7 +8,7 @@ exports.AddMoviesToQueueProcessor = () => {
       // sendNotification(job.data.dbTaskId, job.data.deviceIds);
       // movieUploadByQueue(job.data);
       // movieUploadByQueue
-      movieUploadByQueue(job.data,job.id)
+      movieUploadByQueue(job.data)
     });
   } catch (error) {
     console.log(error);

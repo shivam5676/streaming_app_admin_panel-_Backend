@@ -9,6 +9,7 @@ const movieSchema = new mongoose.Schema(
     visible: { type: Boolean, required: true },
     fileLocation: String,
     shorts: [{ type: mongoose.Schema.Types.Mixed, ref: "Shorts" }],
+    shortsJobs: [{ type: mongoose.Schema.Types.Mixed}],
     layouts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Layout" }],
     genre: [{ type: mongoose.Schema.Types.ObjectId, ref: "Genre" }],
     language: [{ type: mongoose.Schema.Types.ObjectId, ref: "Language" }],
@@ -20,7 +21,7 @@ const movieSchema = new mongoose.Schema(
     medium: String,
     high: String,
   },
-  
+
   {
     timestamps: true, // This adds createdAt and updatedAt automatically
   }

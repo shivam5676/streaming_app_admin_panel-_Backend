@@ -2,58 +2,54 @@ const Movies = require("../models/Movies");
 const Shorts = require("../models/Shorts");
 const uploadVideoToTencent = require("./videoUploader");
 const fs = require("fs");
-exports.movieUploadByQueue = async (data, queueJobID) => {
-  try {
+exports.movieUploadByQueue = async (data) => {
+  async function SaveShortsData(movieId, shortsId) {
     const response = await Movies.findByIdAndUpdate(
-      data.movieId,
+      movieId,
       {
-        $set: { shortsJobs: { $ifNull: ["$shortsJobs", []] } },
         $push: {
-          shorts: "newShort._id ",
-          shortsJobs: {
-            $each: [{ queueJobID: "queueJobID", shortsId: "newShort._id" }], // Ensures correct object push
-          },
+          shorts: shortsId,
+         
         },
-      },
-      { new: true, upsert: true } //updated new columns
+      }
+      // { new: true, upsert: true } //updated new columns
     );
+  }
+  try {
+    console.log(data);
+    const current = data.short;
 
-    console.log(response);
-    // const shortsPromises = data.shorts.map(async (current) => {
-    //   if (current.originalname === "Personalised_Ad.txt") {
-    //     return "Ads";
-    //   }
-    //   const currentShortsBuffer = fs.readFileSync(current.path);
+    if (current.originalname === "Personalised_Ad.txt") {
+      SaveShortsData(data.movieId, "Ads");
 
-    //   const videoData = await uploadVideoToTencent(currentShortsBuffer);
+      return;
+    }
+    const currentShortsBuffer = fs.readFileSync(current.path);
 
-    //   const short = await Shorts.create({
-    //     name: current.filename,
-    //     movieName: data.title,
-    //     fileLocation: videoData.multipleQualityUrls[0].Url,
-    //     fileId: videoData.FileId,
+    const videoData = await uploadVideoToTencent(currentShortsBuffer);
 
-    //     visible: true,
-    //     genre: data.parsedGenre,
-    //     language: data.parsedLanguage,
-    //     low: videoData.multipleQualityUrls[1].Url,
-    //     medium: videoData.multipleQualityUrls[2].Url,
-    //     high: videoData.multipleQualityUrls[3].Url,
-    //   });
+    const short = await Shorts.create({
+      name: current.filename,
+      movieName: data.title,
+      fileLocation: videoData.multipleQualityUrls[0].Url,
+      fileId: videoData.FileId,
 
-    //   fs.unlink(current.path, (err) => {
-    //     if (err) {
-    //       console.error("Error deleting file:", err);
-    //     } else {
-    //       console.log("File deleted successfully");
-    //     }
-    //   });
+      visible: true,
+      genre: data.parsedGenre,
+      language: data.parsedLanguage,
+      low: videoData.multipleQualityUrls[1].Url,
+      medium: videoData.multipleQualityUrls[2].Url,
+      high: videoData.multipleQualityUrls[3].Url,
+    });
 
-    //   return short._id;
-    // });
-    // const shortsIds = await Promise.all(shortsPromises);
-    // data.movie.shorts.push(...shortsIds);
-    // await data.movie.save();
+    fs.unlink(current.path, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted successfully");
+      }
+    });
+    await SaveShortsData(data.movieId, short._id);
   } catch (error) {
     console.log(error, "error inside uploadByQueueControlllers");
   }
