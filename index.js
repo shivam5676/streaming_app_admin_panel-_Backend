@@ -34,10 +34,12 @@ const {
 const {
   SendNotificationToDeviceProcessor,
 } = require("./queue/Processor/Notification/SendNotificationToDeviceProcessor");
-const { AddMoviesToQueueProcessor } = require("./queue/Processor/Movies/AddMoviesToQueueProcessor");
+const {
+  AddMoviesToQueueProcessor,
+} = require("./queue/Processor/Movies/AddMoviesToQueueProcessor");
 DeleteNotificationDeviceProcessor();
 SendNotificationToDeviceProcessor();
-AddMoviesToQueueProcessor()
+AddMoviesToQueueProcessor();
 app.use("/admin", adminRoutes);
 
 app.listen(8765, () => {

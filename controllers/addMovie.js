@@ -10,8 +10,18 @@ const {
   addTaskToMovieUploadQueue,
 } = require("../queue/TaskQueue/Movies/addTAskToMovieUploadQueue");
 exports.addMovie = async (req, res) => {
-  const { title, layouts, freeVideos, visible, genre, trailerUrl, language } =
-    req.body;
+  const {
+    title,
+    layouts,
+    freeVideos,
+    visible,
+    genre,
+    trailerUrl,
+    language,
+    licenseExpiryDate,
+    screenType,
+  } = req.body;
+
   if (!req?.files?.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
@@ -76,6 +86,8 @@ exports.addMovie = async (req, res) => {
       low: trailerUrlTencent?.multipleQualityUrls[1]?.Url,
       medium: trailerUrlTencent?.multipleQualityUrls[2]?.Url,
       high: trailerUrlTencent?.multipleQualityUrls[3]?.Url,
+      licenseExpiry: licenseExpiryDate,
+      screenType: screenType,
     });
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
