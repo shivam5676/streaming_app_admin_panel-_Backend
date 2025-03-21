@@ -121,51 +121,6 @@ exports.addMovie = async (req, res) => {
         });
       });
     }
-    // addTaskToMovieUploadQueue({
-    //   shorts: req.files.shorts,
-    //   parsedLanguage,
-    //   parsedGenre,
-    //   title,
-    //   movie
-    // });
-
-    // if (req.files.shorts && req.files.shorts.length > 0) {
-    //   const shortsPromises = req.files.shorts.map(async (current) => {
-    //     if (current.originalname === "Personalised_Ad.txt") {
-    //       return "Ads";
-    //     }
-    //     const currentShortsBuffer = fs.readFileSync(current.path);
-
-    //     const videoData = await uploadVideoToTencent(currentShortsBuffer);
-
-    //     const short = await Shorts.create({
-    //       name: current.filename,
-    //       movieName: title,
-    //       fileLocation: videoData.multipleQualityUrls[0].Url,
-    //       fileId: videoData.FileId,
-    //       // genre: "action",
-    //       visible: true,
-    //       genre: parsedGenre,
-    //       language: parsedLanguage,
-    //       low: videoData.multipleQualityUrls[1].Url,
-    //       medium: videoData.multipleQualityUrls[2].Url,
-    //       high: videoData.multipleQualityUrls[3].Url,
-    //     });
-
-    //     fs.unlink(current.path, (err) => {
-    //       if (err) {
-    //         console.error("Error deleting file:", err);
-    //       } else {
-    //         console.log("File deleted successfully");
-    //       }
-    //     });
-
-    //     return short._id;
-    //   });
-    //   const shortsIds = await Promise.all(shortsPromises);
-    //   movie.shorts.push(...shortsIds);
-    //   await movie.save();
-    // }
 
     return res
       .status(200)
