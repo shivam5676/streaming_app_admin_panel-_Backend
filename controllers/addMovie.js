@@ -60,7 +60,7 @@ exports.addMovie = async (req, res) => {
     if (req.files?.trailerVideo && req.files.trailerVideo.length > 0) {
       let trailerPath = req?.files?.trailerVideo[0]?.path || "";
       let trailerBuffer = fs.readFileSync(trailerPath) || "";
-
+      //we need to handle if admin uses direct upload link then it will convert the file and save it to tencent so that we could maintaining same settings like video
       trailerUrlTencent = await uploadVideoToTencent(trailerBuffer);
       fs.unlink(trailerPath, (err) => {
         if (err) {
@@ -70,7 +70,6 @@ exports.addMovie = async (req, res) => {
         }
       });
     }
-    //we neee to handle if admin uses direct upload link then it will convert the file and save it to tencent so that we could maintaing same sttings like video
 
     const movie = await Movies.create({
       name: title,
@@ -126,7 +125,6 @@ exports.addMovie = async (req, res) => {
       .status(200)
       .json({ msg: "file saved successfully", movieData: movie });
   } catch (err) {
-    console.log(err);
     const newThumbnailPAth = req?.files?.thumbnail[0].path;
     fs.unlink(newThumbnailPAth, (err) => {
       if (err) {

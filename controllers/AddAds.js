@@ -2,7 +2,10 @@ const Ads = require("../models/AdvertiseMent");
 
 exports.addAds = async (req, res) => {
   console.log(req.body);
-  const { name, type, Provider, visible, position, sessionType } = req.body;
+
+  // return;
+  const { name, type, Provider, visible, position, sessionType, contentData } =
+    req.body;
   if (!name) {
     return res
       .status(400)
@@ -28,6 +31,13 @@ exports.addAds = async (req, res) => {
       .status(400)
       .json({ msg: "Ads display behaviour field should contains some value" });
   }
+  // console.log(!contentData)
+  if (Provider == "Custom" && Object.keys(contentData).length === 0) {
+    return res.status(400).json({
+      msg: "Please Provide customs ads data for displaying top user or you can choose other Ads provider ",
+    });
+  }
+  // return;
   try {
     const adsResponse = await Ads.create({
       name: name,
@@ -41,6 +51,6 @@ exports.addAds = async (req, res) => {
     return res.status(200).json({ msg: "added ads successfully" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: "something went wrong",err:error });
+    return res.status(500).json({ msg: "something went wrong", err: error });
   }
 };
