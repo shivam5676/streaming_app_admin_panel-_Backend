@@ -4,7 +4,7 @@ exports.AddMoviesToQueueProcessor = () => {
   try {
     uploadMoviesQueue.process((job) => {
       //job will process here
-      console.log("job", job, "job.....................>");
+    
       // sendNotification(job.data.dbTaskId, job.data.deviceIds);
       // movieUploadByQueue(job.data);
       // movieUploadByQueue

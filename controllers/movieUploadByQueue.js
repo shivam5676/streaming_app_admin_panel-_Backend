@@ -9,7 +9,6 @@ exports.movieUploadByQueue = async (data) => {
       {
         $push: {
           shorts: shortsId,
-         
         },
       }
       // { new: true, upsert: true } //updated new columns
@@ -40,6 +39,7 @@ exports.movieUploadByQueue = async (data) => {
       low: videoData.multipleQualityUrls[1].Url,
       medium: videoData.multipleQualityUrls[2].Url,
       high: videoData.multipleQualityUrls[3].Url,
+      deductionPoints: data?.deductionPoints || 0,
     });
 
     fs.unlink(current.path, (err) => {
@@ -51,6 +51,6 @@ exports.movieUploadByQueue = async (data) => {
     });
     await SaveShortsData(data.movieId, short._id);
   } catch (error) {
-    console.log(error, "error inside uploadByQueueControlllers");
+    console.log(error, "error inside movieUploadByQueue Controllers");
   }
 };

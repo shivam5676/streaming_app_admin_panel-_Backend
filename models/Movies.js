@@ -22,6 +22,7 @@ const movieSchema = new mongoose.Schema(
     high: String,
     licenseExpiry: String,
     screenType: String,
+    deductionPoints: String,
   },
 
   {

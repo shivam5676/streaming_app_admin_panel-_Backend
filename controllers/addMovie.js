@@ -20,8 +20,10 @@ exports.addMovie = async (req, res) => {
     language,
     licenseExpiryDate,
     screenType,
+    eachShortsPoint,
   } = req.body;
-
+  console.log(eachShortsPoint);
+  // return;
   if (!req?.files?.thumbnail) {
     return res.status(400).json({ msg: "please upload thumbnail" });
   }
@@ -81,7 +83,7 @@ exports.addMovie = async (req, res) => {
       freeVideos: freeVideos,
       trailerUrl: trailerUrl || trailerUrlTencent?.multipleQualityUrls[0]?.Url,
       trailerUrlFileId: trailerUrlTencent?.FileId,
-      parts: req.files?.shorts?.length || 0,
+      parts: req?.files?.shorts?.length || 0,
       low: trailerUrlTencent?.multipleQualityUrls[1]?.Url,
       medium: trailerUrlTencent?.multipleQualityUrls[2]?.Url,
       high: trailerUrlTencent?.multipleQualityUrls[3]?.Url,
@@ -117,6 +119,7 @@ exports.addMovie = async (req, res) => {
           parsedGenre,
           title,
           movieId: movie._id, // Pass only ID to avoid serialization issues
+          deductionPoints: eachShortsPoint,
         });
       });
     }
