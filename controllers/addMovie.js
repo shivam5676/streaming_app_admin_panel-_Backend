@@ -31,15 +31,18 @@ exports.addMovie = async (req, res) => {
   if (!title) {
     return res.status(400).json({ msg: "please provide title" });
   }
+
   if (layouts.length == 0 || !JSON.parse(layouts)) {
     return res.status(400).json({ msg: "please select layout" });
   }
   if (genre.length == 0 || !JSON.parse(genre)) {
     return res.status(400).json({ msg: "please provide genre" });
   }
+
   if (language.length == 0 || !JSON.parse(language)) {
     return res.status(400).json({ msg: "please provide content language" });
   }
+
   if (!req?.files?.trailerVideo && !req.body.trailerUrl) {
     return res
       .status(400)
@@ -50,9 +53,13 @@ exports.addMovie = async (req, res) => {
   const parsedLayout = JSON.parse(layouts).map((current) => {
     return current._id;
   });
+
+
   const parsedGenre = JSON.parse(genre).map((current) => {
     return current._id;
   });
+
+
   const parsedLanguage = JSON.parse(language).map((current) => {
     return current._id;
   });
@@ -90,6 +97,7 @@ exports.addMovie = async (req, res) => {
       licenseExpiry: licenseExpiryDate,
       screenType: screenType,
     });
+    
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
         const layoutResponse = await Layout.findById(current);
