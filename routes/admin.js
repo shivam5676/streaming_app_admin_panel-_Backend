@@ -1,59 +1,78 @@
 const express = require("express");
-const { addMovie } = require("../controllers/addMovie");
+const { addMovie } = require("../controllers/movies/addMovie");
+const { getAllMovies } = require("../controllers/movies/getAllMovies");
+const { deleteMovies } = require("../controllers/movies/deleteMovies");
+const { getmovie } = require("../controllers/movies/getmovie");
+const { editMovie } = require("../controllers/movies/editMovie");
+const ChangeSequence = require("../controllers/movies/ChangeSequence");
+const { disableVideo } = require("../controllers/movies/disableVideo");
+const { enableVideo } = require("../controllers/movies/enableVideo");
+const { addAdsInMovie } = require("../controllers/movies/AddAdsInMovie");
 
-const { addSlider } = require("../controllers/addSllider");
+const { addSlider } = require("../controllers/sliders/addSllider");
+const { getAllSliders } = require("../controllers/sliders/getAllSliders");
+const { deleteSlider } = require("../controllers/sliders/deleteSlider");
 const multer = require("multer");
-const { addLayout } = require("../controllers/addLayout");
-const { getAllMovies } = require("../controllers/getAllMovies");
-const { deleteMovies } = require("../controllers/deleteMovies");
-const { getmovie } = require("../controllers/getmovie");
-const { editMovie } = require("../controllers/editMovie");
-const { deleteShort } = require("../controllers/deleteShort");
-const { getAllLayout } = require("../controllers/getAllLayout");
-const { getLayout } = require("../controllers/getLayout");
-const { editLayout } = require("../controllers/editLayout");
+const { addLayout } = require("../controllers/layouts/addLayout");
+const { deleteLayout } = require("../controllers/layouts/deleteLAyout");
+const { getAllLayout } = require("../controllers/layouts/getAllLayout");
+const { getLayoutData } = require("../controllers/layouts/getLayoutData");
+const { editLayout } = require("../controllers/layouts/editLayout");
 const {
   deleteLayoutLinkedMovies,
 } = require("../controllers/deleteLayoutLinkedMovies");
-const { getAllSliders } = require("../controllers/getAllSliders");
-const { deleteSlider } = require("../controllers/deleteSlider");
-const { addGenre } = require("../controllers/addGenre");
-const { getAllGenre } = require("../controllers/getAllGenre");
-const { deleteGenres } = require("../controllers/deleteGenre");
-const { addLanguage } = require("../controllers/addLanguage");
-const { getAllLLanguages } = require("../controllers/getAllLAnguage");
-const { deleteLanguage } = require("../controllers/deleteLanguage");
-const { getAllUsers } = require("../controllers/getAllUSers");
-const { getUserDetails } = require("../controllers/getUserDetails");
-const { deleteLayout } = require("../controllers/deleteLAyout");
-const { updateUserDetails } = require("../controllers/updateUserDetails");
-const { getDashboardData } = require("../controllers/getDAshBoardData");
-const { fetchContentViews } = require("../controllers/fetchContentViews");
-const { fetchTopMovies } = require("../controllers/fetchTopMovies");
-const { fetchLatestUser } = require("../controllers/fetchLatestUSer");
+const { deleteShort } = require("../controllers/deleteShort");
+
+const { addGenre } = require("../controllers/genres/addGenre");
+const { getAllGenre } = require("../controllers/genres/getAllGenre");
+const { deleteGenres } = require("../controllers/genres/deleteGenre");
+
+const { addLanguage } = require("../controllers/language/addLanguage");
+const { getAllLLanguages } = require("../controllers/language/getAllLAnguage");
+const { deleteLanguage } = require("../controllers/language/deleteLanguage");
+
+const { getAllUsers } = require("../controllers/users/getAllUSers");
+const { getUserDetails } = require("../controllers/users/getUserDetails");
+const { updateUserDetails } = require("../controllers/users/updateUserDetails");
+
+const {
+  getDashboardData,
+} = require("../controllers/dashboard/getDAshBoardData");
+const {
+  fetchContentViews,
+} = require("../controllers/dashboard/fetchContentViews");
+const { fetchTopMovies } = require("../controllers/dashboard/fetchTopMovies");
+const { fetchLatestUser } = require("../controllers/dashboard/fetchLatestUSer");
+
 const { adminLogin } = require("../controllers/auth/adminLogin");
 const uploadVideoToTencent = require("../controllers/videoUploader");
-const { addCheckedInSlide } = require("../controllers/addCheckedInSlide");
-const { fetchCheckedInSlide } = require("../controllers/fetchCheckedInSlide");
+
 const checkTaskStatus = require("../controllers/checkTaskStatus");
 const { registerAdmin } = require("../controllers/auth/registerAdmin");
 const { checkToken } = require("../controllers/auth/checkToken");
 const { checkAdmin } = require("../controllers/auth/checkAdmin");
-const { addAds } = require("../controllers/AddAds");
-const { deleteAds } = require("../controllers/deleteAds");
-const { disableVideo } = require("../controllers/disableVideo");
-const { enableVideo } = require("../controllers/enableVideo");
-const ChangeSequence = require("../controllers/ChangeSequence");
-const { addAdsInMovie } = require("../controllers/AddAdsInMovie");
-const { AllAds } = require("../controllers/AllAds");
-const { sendNotification } = require("../controllers/sendNotification");
-const { saveNotification } = require("../controllers/saveNotification");
+
+const { addAds } = require("../controllers/advertisements/AddAds");
+const { deleteAds } = require("../controllers/advertisements/deleteAds");
+const { AllAds } = require("../controllers/advertisements/AllAds");
+
+const { addCheckedInSlide } = require("../controllers/checkinTask/addCheckedInSlide");
+const { fetchCheckedInSlide } = require("../controllers/checkinTask/fetchCheckedInSlide");
+
+const {
+  sendNotification,
+} = require("../controllers/notification/sendNotification");
+const {
+  saveNotification,
+} = require("../controllers/notification/saveNotification");
 const { movieFileHandler } = require("../controllers/MovieFileHAndler");
 const fs = require("fs");
 const path = require("path");
-const { getAllNotification } = require("../controllers/getAllNotificationTask");
+const {
+  getAllNotification,
+} = require("../controllers/notification/getAllNotificationTask");
 const { terminateJob } = require("../controllers/TerminateJob");
-const { AddMintsPlan } = require("../controllers/AddMintsPlan");
+const { AddMintsPlan } = require("../controllers/mintsPlan/AddMintsPlan");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -136,7 +155,7 @@ routes.post(
   editMovie
 );
 routes.get("/allLayouts", checkToken, checkAdmin, getAllLayout);
-routes.get("/getLayout/:id", checkToken, checkAdmin, getLayout);
+routes.get("/getLayout/:id", checkToken, checkAdmin, getLayoutData);
 routes.post("/editLayout", checkToken, checkAdmin, editLayout);
 routes.delete("/deleteShort/:id", checkToken, checkAdmin, deleteShort);
 // deleteLinkedMovie
@@ -172,7 +191,6 @@ routes.post("/getUserDetails", checkToken, checkAdmin, getUserDetails);
 routes.put("/updateUserDetails", checkToken, checkAdmin, updateUserDetails);
 routes.get("/getDashboard/:type", checkToken, checkAdmin, getDashboardData);
 routes.get("/getContentViews/:type", checkToken, checkAdmin, fetchContentViews);
-// updateUserDetails
 routes.get("/fetchTopMovies/:type", checkToken, checkAdmin, fetchTopMovies);
 
 routes.get("/fetchLatestUsers/:type", checkToken, checkAdmin, fetchLatestUser);
