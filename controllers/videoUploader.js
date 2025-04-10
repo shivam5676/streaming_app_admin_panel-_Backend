@@ -3,24 +3,17 @@ const COS = require("cos-nodejs-sdk-v5");
 const fs = require("fs");
 const path = require("path");
 const bodyParser = require("body-parser");
-
+const dotenv = require("dotenv");
 const transcodeTencentVideo = require("../controllers/transcodeVideo");
-// const videoFilePath = path.join(
-//   __dirname,
-//   "..",
-//   "uploads",
-//   "shorts",
-//   "v_1728366358273.mp4"
-// ); // Use __dirname for current directory
-// console.log(videoFilePath);
+dotenv.config();
 
 const VodClient = tencentcloud.vod.v20180717.Client;
 
 // Initialize the client with your Tencent Cloud credentials
 const clientConfig = {
   credential: {
-    secretId: "IKID67v3DII5iEYikhhmy37DKH8tUxGi4FG6", // Replace with your Tencent Cloud SecretId
-    secretKey: "87uDH7mNm3DA5ta6RcaMxKVUIsENIFBt", // Replace with your Tencent Cloud SecretKey
+    secretId: process.env.SECRETID, // Replace with your Tencent Cloud SecretId
+    secretKey: process.env.SECRETKEY, // Replace with your Tencent Cloud SecretKey
   },
   region: "ap-hongkong", // Correct region
   profile: {
@@ -61,7 +54,6 @@ function uploadVideo(videoFile) {
         Bucket: StorageBucket,
         Region: StorageRegion,
         Key: MediaStoragePath,
-        // Body: fs.createReadStream(videoFilePath), // Read video file
         Body: videoFile,
       };
 
@@ -102,7 +94,7 @@ const uploadVideoToTencent = (video) => {
       console.log(videoData, "promise");
       const fileId = videoData.FileId; // Extract FileId
       // const templateIds = [101302, 101305, 101308];
-      return transcodeTencentVideo(fileId, [101308, 101305, 101302], client);//low,medium,high
+      return transcodeTencentVideo(fileId, [101308, 101305, 101302], client); //low,medium,high
       // return videoData;
     })
     .catch((err) => console.log(err));

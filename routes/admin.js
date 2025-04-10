@@ -1,4 +1,7 @@
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
+
 const { addMovie } = require("../controllers/movies/addMovie");
 const { getAllMovies } = require("../controllers/movies/getAllMovies");
 const { deleteMovies } = require("../controllers/movies/deleteMovies");
@@ -56,8 +59,12 @@ const { addAds } = require("../controllers/advertisements/AddAds");
 const { deleteAds } = require("../controllers/advertisements/deleteAds");
 const { AllAds } = require("../controllers/advertisements/AllAds");
 
-const { addCheckedInSlide } = require("../controllers/checkinTask/addCheckedInSlide");
-const { fetchCheckedInSlide } = require("../controllers/checkinTask/fetchCheckedInSlide");
+const {
+  addCheckedInSlide,
+} = require("../controllers/checkinTask/addCheckedInSlide");
+const {
+  fetchCheckedInSlide,
+} = require("../controllers/checkinTask/fetchCheckedInSlide");
 
 const {
   sendNotification,
@@ -66,8 +73,7 @@ const {
   saveNotification,
 } = require("../controllers/notification/saveNotification");
 const { movieFileHandler } = require("../controllers/MovieFileHAndler");
-const fs = require("fs");
-const path = require("path");
+
 const {
   getAllNotification,
 } = require("../controllers/notification/getAllNotificationTask");

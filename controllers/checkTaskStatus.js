@@ -1,13 +1,14 @@
 const tencentcloud = require("tencentcloud-sdk-nodejs");
-
+const dotenv = require("dotenv");
+dotenv.config();
 // Import the VOD and STS clients
 const VodClient = tencentcloud.vod.v20180717.Client;
 const StsClient = tencentcloud.sts.v20180813.Client;
 
 // Permanent credentials for generating temporary credentials
 const permanentCredential = {
-  secretId: "IKID67v3DII5iEYikhhmy37DKH8tUxGi4FG6", // Replace with your Tencent Cloud SecretId
-  secretKey: "87uDH7mNm3DA5ta6RcaMxKVUIsENIFBt", // Replace with your Tencent Cloud SecretKey
+  secretId: process.env.SECRETID, // Replace with your Tencent Cloud SecretId
+  secretKey: process.env.SECRETKEY, // Replace with your Tencent Cloud SecretKey
 };
 
 // Function to generate temporary credentials
@@ -47,10 +48,9 @@ const generateTemporaryCredentials = () => {
 
 // Function to fetch task details using DescribeTasks API
 const fetchTaskDetails = async (fileId, finishTimeAfter, finishTimeBefore) => {
-    if(!fileId){
-        throw new Error("no file id");
-        
-    }
+  if (!fileId) {
+    throw new Error("no file id");
+  }
   try {
     // Generate temporary credentials
     const tempCredentials = await generateTemporaryCredentials();
@@ -105,15 +105,14 @@ const checkTaskStatus = async (fileId, finishTimeAfter, finishTimeBefore) => {
       );
 
       // Check if tasks exist and process them
-      if (taskDetails.TaskSet.length===0) {
-
+      if (taskDetails.TaskSet.length === 0) {
         // console.error("Task not found:", taskId);
         // return reject(new Error(`Task with ID ${taskId} not found`));
         setTimeout(() => {
-            checkTaskStatus(fileId)
-              .then(resolve) // Continue the promise chain
-              .catch(reject); // Handle errors in the recursive chain
-          }, 5000);
+          checkTaskStatus(fileId)
+            .then(resolve) // Continue the promise chain
+            .catch(reject); // Handle errors in the recursive chain
+        }, 5000);
       }
       console.log("Task Details:", taskDetails.TaskSet.length);
       // Check task status
