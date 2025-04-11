@@ -107,7 +107,7 @@ exports.saveNotification = async (req, res) => {
         startTimeAndDateString - roundedCurrentTimeAndDateString
       );
     }
-    console.log(deviceIds)
+    console.log(deviceIds);
     const response = await addTaskToSendNotificationDeviceQueue(
       notificationTask._id,
       deviceIds,
