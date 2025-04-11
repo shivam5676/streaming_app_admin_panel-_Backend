@@ -50,12 +50,12 @@ exports.saveNotification = async (req, res) => {
   const roundedCurrentTimeAndDateString =
     Math.floor(currentTimeAndDateString / 60) * 60 * 1000; //rounding to minutes not taking millisecond
   const gracePeriod = 120000;
-  console.log(
-    startTimeAndDateString,
-    endTimeAndDateString,
+  // console.log(
+  //   startTimeAndDateString,
+  //   endTimeAndDateString,
 
-    roundedCurrentTimeAndDateString
-  );
+  //   roundedCurrentTimeAndDateString
+  // );
   if (startTimeAndDateString < roundedCurrentTimeAndDateString - gracePeriod) {
     return res
       .status(400)
