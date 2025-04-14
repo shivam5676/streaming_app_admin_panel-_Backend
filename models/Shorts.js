@@ -12,7 +12,8 @@ const shortsSchema = new mongoose.Schema(
     views: { type: Number, default: 0 },
     low: String,
     medium: String,
-    high: String,deductionPoints:String
+    high: String,
+    deductionPoints: { type: String, default: 0 },
   },
   {
     timestamps: true, // This adds createdAt and updatedAt automatically

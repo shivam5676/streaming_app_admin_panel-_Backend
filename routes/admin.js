@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-
+const multer = require("multer");
 const { addMovie } = require("../controllers/movies/addMovie");
 const { getAllMovies } = require("../controllers/movies/getAllMovies");
 const { deleteMovies } = require("../controllers/movies/deleteMovies");
@@ -15,7 +15,7 @@ const { addAdsInMovie } = require("../controllers/movies/AddAdsInMovie");
 const { addSlider } = require("../controllers/sliders/addSllider");
 const { getAllSliders } = require("../controllers/sliders/getAllSliders");
 const { deleteSlider } = require("../controllers/sliders/deleteSlider");
-const multer = require("multer");
+
 const { addLayout } = require("../controllers/layouts/addLayout");
 const { deleteLayout } = require("../controllers/layouts/deleteLAyout");
 const { getAllLayout } = require("../controllers/layouts/getAllLayout");
@@ -79,6 +79,9 @@ const {
 } = require("../controllers/notification/getAllNotificationTask");
 const { terminateJob } = require("../controllers/TerminateJob");
 const { AddMintsPlan } = require("../controllers/mintsPlan/AddMintsPlan");
+const { setShortsDeductionPoints } = require("../controllers/movies/setShortsDeductionPoints");
+const { AllAdmin } = require("../controllers/Admin/AllAdmin");
+const { AllMintsPlan } = require("../controllers/mintsPlan/AllMintsPlan");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -210,6 +213,7 @@ routes.post("/addAdsInMovie", checkToken, checkAdmin, addAdsInMovie);
 routes.delete("/deleteAds", checkToken, checkAdmin, deleteAds);
 routes.post("/disableVideo", checkToken, checkAdmin, disableVideo);
 routes.post("/enableVideo", checkToken, checkAdmin, enableVideo),
+routes.post("/setShortspoints",checkToken,checkAdmin, setShortsDeductionPoints)
   routes.post("/changeSequence", checkToken, checkAdmin, ChangeSequence);
 routes.post("/addAds", checkToken, checkAdmin, addAds);
 routes.get("/getAds", checkToken, checkAdmin, AllAds);
@@ -219,4 +223,6 @@ routes.get("/sendMessage", sendNotification);
 routes.get("/getAllNotifications", getAllNotification);
 routes.post("/addSubscriptionPlan", AddMintsPlan);
 routes.get("/terminateJob", terminateJob);
+routes.get("/allAdmin", checkToken, checkAdmin, AllAdmin);
+routes.get("/allSubscriptionPlan", checkToken, checkAdmin, AllMintsPlan);
 module.exports = routes;

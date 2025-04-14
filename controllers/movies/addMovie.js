@@ -54,11 +54,9 @@ exports.addMovie = async (req, res) => {
     return current._id;
   });
 
-
   const parsedGenre = JSON.parse(genre).map((current) => {
     return current._id;
   });
-
 
   const parsedLanguage = JSON.parse(language).map((current) => {
     return current._id;
@@ -97,7 +95,7 @@ exports.addMovie = async (req, res) => {
       licenseExpiry: licenseExpiryDate,
       screenType: screenType,
     });
-    
+
     if (movie) {
       const pendingPromises = parsedLayout.map(async (current) => {
         const layoutResponse = await Layout.findById(current);

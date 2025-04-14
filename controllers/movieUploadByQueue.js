@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Movies = require("../models/Movies");
 const Shorts = require("../models/Shorts");
 const uploadVideoToTencent = require("./videoUploader");
@@ -8,14 +9,13 @@ exports.movieUploadByQueue = async (data) => {
       movieId,
       {
         $push: {
-          shorts: shortsId,
+          shorts: mongoose.Types.ObjectId(shortsId),
         },
       }
-      // { new: true, upsert: true } //updated new columns
+      
     );
   }
   try {
-    console.log(data);
     const current = data.short;
 
     if (current.originalname === "Personalised_Ad.txt") {
