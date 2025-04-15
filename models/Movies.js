@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Language = require("./language");
 const movieSchema = new mongoose.Schema(
   {
+    status: String,
     name: String,
     genre: String,
     layout: String,

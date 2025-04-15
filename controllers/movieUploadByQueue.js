@@ -5,11 +5,13 @@ const uploadVideoToTencent = require("./videoUploader");
 const fs = require("fs");
 exports.movieUploadByQueue = async (data) => {
   async function SaveShortsData(movieId, shortsId) {
+    console.log(shortsId,"HJFSDJKAHVKJFGVSJKGFVDSBGVC")
     const response = await Movies.findByIdAndUpdate(
       movieId,
       {
+        status:"finished",
         $push: {
-          shorts: mongoose.Types.ObjectId(shortsId),
+          shorts:shortsId,
         },
       }
       

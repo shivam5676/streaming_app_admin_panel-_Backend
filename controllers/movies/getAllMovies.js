@@ -12,7 +12,7 @@ exports.getAllMovies = async (req, res, next) => {
       };
     }
     const totalMoviesCount = await Movies.countDocuments(filter);
-    const allMovies = await Movies.find(filter)
+    const allMovies = await Movies.find(filter).sort({createdAt:-1})
       .populate([
         {
           path: "layouts",

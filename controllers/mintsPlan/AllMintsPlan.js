@@ -1,6 +1,7 @@
 const mintsPlan = require("../../models/subscriptionPlan");
 
 exports.AllMintsPlan = async (req, res) => {
+  
   try {
     const response = await mintsPlan.find();
     console.log(response);

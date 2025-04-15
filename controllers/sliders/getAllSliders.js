@@ -2,7 +2,6 @@ const Slider = require("../../models/Slider");
 
 exports.getAllSliders = async (req, res) => {
   const { start, limit, searched } = req.query;
-  // console.log(start, limit,searched);
 
   let filter = {};
   try {

@@ -79,6 +79,7 @@ exports.addMovie = async (req, res) => {
     }
 
     const movie = await Movies.create({
+      status:req?.files?.shorts?.length > 0?"uploading":"finished",
       name: title,
       fileLocation: `uploads/thumbnail/${thumbNailName}`,
       genre: parsedGenre,
@@ -115,7 +116,7 @@ exports.addMovie = async (req, res) => {
     );
     const shortsFolderExists = fs.existsSync(shortsFolderLocation);
     if (!shortsFolderExists) {
-      fs.mkdirSync(shortsFolderLocation);
+      fs.mkdirSync(shortsFolderLocation,{recursive:true});
     }
     if (req?.files?.shorts?.length > 0) {
       req.files.shorts.forEach((short) => {
@@ -134,6 +135,7 @@ exports.addMovie = async (req, res) => {
       .status(200)
       .json({ msg: "file saved successfully", movieData: movie });
   } catch (err) {
+    console.log(err)
     const newThumbnailPAth = req?.files?.thumbnail[0].path;
     fs.unlink(newThumbnailPAth, (err) => {
       if (err) {

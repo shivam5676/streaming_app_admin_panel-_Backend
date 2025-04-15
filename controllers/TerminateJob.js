@@ -2,6 +2,7 @@ const { sendNotificationtoDeviceQueue } = require("../services/bullServices");
 const NotificationTasks = require("../models/NotificationTask");
 
 exports.terminateJob = async (req, res) => {
+  // THIS API IS CRETAED FOR TERMINATED A TASK FROM nOTIDFICATION JOB QUEUE
   const taskId = req.query.taskId;
   if (!taskId) {
     return res.status(400).json({ msg: "no task id found ...." });

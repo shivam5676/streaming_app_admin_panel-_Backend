@@ -6,12 +6,23 @@ const Layout = require("../../models/Layout");
 const Genre = require("../../models/genre");
 const uploadVideoToTencent = require("./../videoUploader");
 exports.editMovie = async (req, res, next) => {
-  const { id, title, layouts, freeVideos, visible, genre, language } = req.body;
+  const {
+    id,
+    title,
+    layouts,
+    freeVideos,
+    visible,
+    genre,
+    language,
+    screenType,
+    licenseExpiryDate,
+  } = req.body;
 
   const parsedLanguage = JSON.parse(language).map((current) => {
     return current._id;
   });
 
+  console.log(screenType, licenseExpiryDate);
   async function unlinkMovieHandler() {
     const allLayouts = await Movies.findById(id).select("layouts -_id");
 
@@ -64,6 +75,8 @@ exports.editMovie = async (req, res, next) => {
           layouts: parsedLayout,
           freeVideos: freeVideos,
           language: parsedLanguage,
+          licenseExpiry: licenseExpiryDate,
+          screenType: screenType,
         });
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
@@ -230,8 +243,6 @@ exports.editMovie = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    return res
-    .status(500)
-    .json({ msg: "something went wrong",err:error });
+    return res.status(500).json({ msg: "something went wrong", err: error });
   }
 };
