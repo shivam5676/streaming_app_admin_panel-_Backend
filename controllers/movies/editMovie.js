@@ -22,7 +22,7 @@ exports.editMovie = async (req, res, next) => {
     return current._id;
   });
 
-  console.log(screenType, licenseExpiryDate);
+  // console.log(screenType, licenseExpiryDate);
   async function unlinkMovieHandler() {
     const allLayouts = await Movies.findById(id).select("layouts -_id");
 
@@ -78,6 +78,7 @@ exports.editMovie = async (req, res, next) => {
           licenseExpiry: licenseExpiryDate,
           screenType: screenType,
         });
+        print(result)
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
             const layoutResponse = await Layout.findOne({
@@ -172,6 +173,8 @@ exports.editMovie = async (req, res, next) => {
           layouts: parsedLayout,
           freeVideos: freeVideos,
           language: parsedLanguage,
+          licenseExpiry: licenseExpiryDate,
+          screenType: screenType,
         });
         if (parsedLayout.length > 0) {
           const pendingPromises = parsedLayout.map(async (current) => {
