@@ -82,6 +82,7 @@ const { AddMintsPlan } = require("../controllers/mintsPlan/AddMintsPlan");
 const { setShortsDeductionPoints } = require("../controllers/movies/setShortsDeductionPoints");
 const { AllAdmin } = require("../controllers/Admin/AllAdmin");
 const { AllMintsPlan } = require("../controllers/mintsPlan/AllMintsPlan");
+const {  getSliderData } = require("../controllers/sliders/getSliderData");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -151,6 +152,7 @@ routes.post(
   upload.single("promotionalImage"),
   addSlider
 );
+routes.get("/getSlider/:id", checkToken, checkAdmin, getSliderData);
 routes.post("/addLayout", checkToken, checkAdmin, addLayout);
 routes.get("/allMovies", checkToken, checkAdmin, getAllMovies);
 routes.delete("/deleteMovie/:id", checkToken, checkAdmin, deleteMovies);

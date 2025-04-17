@@ -23,6 +23,7 @@ exports.getAllSliders = async (req, res) => {
     if (!response) {
       return res.status(200).json({ Slider: [] });
     }
+    console.log(response)
     return res.status(200).json({
       Slider: response,
       start,
