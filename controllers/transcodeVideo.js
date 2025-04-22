@@ -2,7 +2,7 @@ const checkTaskStatus = require("./checkTaskStatus");
 
 const transcodeVideo = (fileId, templateIds, client) => {
   return new Promise((resolve, reject) => {
-    console.log("Transcoding start");
+    // console.log("Transcoding start");
 
     const transcodeParams = {
       FileId: fileId,

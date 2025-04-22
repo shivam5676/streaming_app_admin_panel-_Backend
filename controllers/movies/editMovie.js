@@ -32,7 +32,7 @@ exports.editMovie = async (req, res, next) => {
       });
 
       if (!matched) {
-        console.log(current, "...>");
+        // console.log(current, "...>");
         const delinkMoviesFromLAyout = await Layout.findById(current);
         await delinkMoviesFromLAyout.linkedMovies.pull(id);
         await delinkMoviesFromLAyout.save();

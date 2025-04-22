@@ -25,6 +25,7 @@ const {
   deleteLayoutLinkedMovies,
 } = require("../controllers/deleteLayoutLinkedMovies");
 const { deleteShort } = require("../controllers/deleteShort");
+const { multipleDeleteShorts } = require("../controllers/multipleDeleteShorts");
 
 const { addGenre } = require("../controllers/genres/addGenre");
 const { getAllGenre } = require("../controllers/genres/getAllGenre");
@@ -169,6 +170,7 @@ routes.get("/allLayouts", checkToken, checkAdmin, getAllLayout);
 routes.get("/getLayout/:id", checkToken, checkAdmin, getLayoutData);
 routes.post("/editLayout", checkToken, checkAdmin, editLayout);
 routes.delete("/deleteShort/:id", checkToken, checkAdmin, deleteShort);
+routes.delete("/multipleDeleteShorts", checkToken, checkAdmin, multipleDeleteShorts);
 // deleteLinkedMovie
 routes.post(
   "/deleteLinkedMovie",

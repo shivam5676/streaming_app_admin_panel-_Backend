@@ -1,0 +1,53 @@
+const Movies = require("../models/Movies")
+const Shorts = require("../models/Shorts");
+const fs = require("fs");
+const path = require("path");
+const mongoose = require("mongoose");
+const deleteVideoFromTencent = require("./deleteVideoFromTencent");
+exports.multipleDeleteShorts = async (req, res, next) => {
+  //   console.log(req.body.value);
+  const { shortIds } = req.body;
+  console.log(shortIds, req.body);
+  if (!Array.isArray(shortIds)) {
+    return res.status(400).json({ error: "Invalid input. 'shprtIds' must be an array." });
+  }
+  if (shortIds.length == 0) {
+    return res.status(400).json({ error: "ShortIds field is empty" });
+  }
+  try {
+    const deleteShorts = async (shortIds) => {
+      for (const id of shortIds) {
+        const objectId = new mongoose.Types.ObjectId(id);
+        const short = await Shorts.findById(objectId);
+
+        if (short) {
+          // 1. Delete from Tencent Cloud
+          if (short.fileId) {
+            await deleteVideoFromTencent(short.fileId);
+          } else {
+            return res.status(400).json({ error: "fileid is missing" });
+          }
+
+          // 2. Delete from Shorts collection
+          await Shorts.findByIdAndDelete(objectId);
+        }
+
+        // 3. Remove from all Movies.shorts arrays
+        const result = await Movies.updateMany(
+          { shorts: objectId },
+          { $pull: { shorts: objectId } }
+        );
+        console.log(`Removed from ${result.modifiedCount} movies`);
+
+      }
+
+      console.log("All specified shorts have been deleted and removed from movies.");
+    };
+
+    await deleteShorts(shortIds);
+    return res.status(200).json({ msg: "Shorts deleted Successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ msg: "something went wrong", err: err });
+  }
+};

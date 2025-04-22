@@ -22,7 +22,7 @@ const clientConfig = {
     },
   },
 };
-
+console.log(clientConfig)
 const client = new VodClient(clientConfig);
 
 // Function to upload a video

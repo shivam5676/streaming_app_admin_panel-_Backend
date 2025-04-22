@@ -12,7 +12,7 @@ exports.terminateJob = async (req, res) => {
     if (!notificationTask) {
       return res.status(400).json({ msg: "invalid notification id...." });
     }
-    console.log(notificationTask);
+    // console.log(notificationTask);
     const jobTask = await sendNotificationtoDeviceQueue.getJob(
       notificationTask.jobId
     );

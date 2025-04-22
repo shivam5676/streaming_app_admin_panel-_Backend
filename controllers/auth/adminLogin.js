@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { createToken } = require("./createToken");
 exports.adminLogin = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(email, password)
   // const verifyToken = (token, secretKey) => {
   //   return new Promise((resolve, reject) => {
   //     jwt.verify(token, secretKey, (err, decoded) => {

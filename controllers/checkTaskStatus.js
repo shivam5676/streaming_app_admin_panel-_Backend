@@ -11,6 +11,7 @@ const permanentCredential = {
   secretKey: process.env.SECRETKEY, // Replace with your Tencent Cloud SecretKey
 };
 
+console.log(permanentCredential)
 // Function to generate temporary credentials
 const generateTemporaryCredentials = () => {
   return new Promise((resolve, reject) => {

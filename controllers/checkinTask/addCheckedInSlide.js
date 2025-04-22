@@ -1,7 +1,7 @@
 const checkInpoints = require("../../models/checkInPoints");
 
 exports.addCheckedInSlide = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const {
     start,
     end,

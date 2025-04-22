@@ -5,7 +5,7 @@ const uploadVideoToTencent = require("./videoUploader");
 const fs = require("fs");
 exports.movieUploadByQueue = async (data) => {
   async function SaveShortsData(movieId, shortsId) {
-    console.log(shortsId,"HJFSDJKAHVKJFGVSJKGFVDSBGVC")
+    // console.log(shortsId,"HJFSDJKAHVKJFGVSJKGFVDSBGVC")
     const response = await Movies.findByIdAndUpdate(
       movieId,
       {
@@ -48,7 +48,7 @@ exports.movieUploadByQueue = async (data) => {
       if (err) {
         console.error("Error deleting file:", err);
       } else {
-        console.log("File deleted successfully");
+        // console.log("File deleted successfully");
       }
     });
     await SaveShortsData(data.movieId, short._id);

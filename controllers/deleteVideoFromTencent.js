@@ -29,7 +29,7 @@ function deleteVideo(fileId) {
         console.error("Error deleting video:", err);
         reject(err);
       } else {
-        console.log("Video deleted successfully:", response);
+        // console.log("Video deleted successfully:", response);
         resolve(response);
       }
     });
@@ -40,7 +40,7 @@ function deleteVideo(fileId) {
 const deleteVideoFromTencent = async (fileId) => {
   try {
     const response = await deleteVideo(fileId);
-    console.log("Delete response:", response);
+    // console.log("Delete response:", response);
     return { msg: "file deleted from tencent server", status: true };
   } catch (error) {
     console.error("Error deleting video:", error);

@@ -13,7 +13,7 @@ exports.deleteMovies = async (req, res, next) => {
         .status(400)
         .json({ msg: "umable to find movie ", status: false });
     }
-    console.log(deleteResponse, "dlresponse");
+    // console.log(deleteResponse, "dlresponse");
     //i need to add delte all related shorts from tencent cloud
     const deleteShortsPromises = await deleteResponse.shorts.map(
       async (current) => {
@@ -21,7 +21,7 @@ exports.deleteMovies = async (req, res, next) => {
 
         if (short) {
           // Delete the video from Tencent Cloud (use your API method)
-          console.log(short,"fileId")
+          // console.log(short,"fileId")
           if(short.fileId){
             await deleteVideoFromTencent(short.fileId); // Assuming `fileId` is stored in the Shorts model
           }
